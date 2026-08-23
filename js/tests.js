@@ -9,10 +9,11 @@ window.MindPeakTests = {
     assert('no leading zero', makeSequence(6, () => 0)[0] !== '0');
     assert('wrong answer scores zero', calculateRoundScore(5, 1000, false) === 0);
     assert('higher difficulty scores more', calculateRoundScore(6, 1000, true) > calculateRoundScore(3, 1000, true));
-    assert('malformed storage fallback', loadProgress('{broken').version === 6);
+    assert('malformed storage fallback', loadProgress('{broken').version === 7);
     assert('progress merge', loadProgress('{"streak":7}').streak === 7);
     assert('nonogram history migration', Array.isArray(loadProgress('{"version":4,"seen":{"race":[],"castle":[]}}').seen.nonogram));
     assert('logic grid history migration', Array.isArray(loadProgress('{"version":5,"seen":{"race":[],"castle":[],"nonogram":[]}}').seen.logicGrid));
+    assert('lights out history migration', Array.isArray(loadProgress('{"version":6,"seen":{"logicGrid":[]}}').seen.lightsOut));
     const colorTrial = makeColorTrial(() => .1);
     assert('color trial in range', colorTrial.word >= 0 && colorTrial.ink < COLORS.length);
     const mathTrial = makeMathTrial(10, () => .2);
@@ -42,6 +43,10 @@ window.MindPeakTests = {
     const logicSolution=[[0,1,2],[1,2,0]],logicClues=logicSolution.flatMap((permutation,cat)=>permutation.map((item,person)=>({type:'personEq',cat,person,item}))),logicSolved=solveLogicGrid(3,2,logicClues,2);
     assert('logic matrix solver unique', logicSolved.count === 1);
     assert('logic matrix solver matches', logicSolved.solution.flat().join('') === logicSolution.flat().join(''));
+    assert('lights center affects cross', lightsAffected(4,3).length === 5);
+    const lightsBoard=applyLightPresses(Array(16).fill(0),4,[0,5,10]),lightsSolution=solveLightsOut(lightsBoard,4);
+    assert('lights solver finds solution', Array.isArray(lightsSolution));
+    assert('lights solver turns all off', applyLightPresses(lightsBoard,4,lightsSolution).every(value=>value===0));
     console.table(checks.map(name => ({ test: name, result: 'PASS' }))); return `${checks.length} tests passed`;
   }
 };
