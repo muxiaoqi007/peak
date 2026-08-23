@@ -15,13 +15,14 @@ const GAMES = [
   { id: 'stroke', icon: '⌁', title: '一笔画', desc: '每条线只能经过一次，画完整个图形。', type: '推理训练', ready: true },
   { id: 'race', icon: 'ⅠⅡ', title: '赛马逻辑', desc: '根据线索推断每匹马的最终名次。', type: '逻辑推理', ready: true },
   { id: 'castle', icon: '城', title: '城堡拼图', desc: '拖动地图拼块，完整填满矩形区域。', type: '空间推理', ready: true },
-  { id: 'nonogram', icon: '▥', title: '数织', desc: '根据行列数字线索，推理并填出隐藏图案。', type: '逻辑推理', ready: true }
+  { id: 'nonogram', icon: '▥', title: '数织', desc: '根据行列数字线索，推理并填出隐藏图案。', type: '逻辑推理', ready: true },
+  { id: 'logic-grid', icon: '✓×', title: '逻辑矩阵', desc: '阅读条件线索，用确定与排除找出唯一对应关系。', type: '逻辑推理', ready: true }
 ];
 const STORAGE_KEY = 'lizhi-progress-v1';
-const DEFAULT_PROGRESS = { version: 5, streak: 1, xp: 999999, sessions: 0, completedToday: 0, best: {}, history: [], seen: { race: [], castle: [], nonogram: [] } };
+const DEFAULT_PROGRESS = { version: 6, streak: 1, xp: 999999, sessions: 0, completedToday: 0, best: {}, history: [], seen: { race: [], castle: [], nonogram: [], logicGrid: [] } };
 function loadProgress(raw = localStorage.getItem(STORAGE_KEY)) {
-  try { const data = raw ? JSON.parse(raw) : {}; let migrated = data.version === 1 ? { ...data, version: 2, xp: 999999 } : data; if((migrated.version||0)<3)migrated={...migrated,version:3,history:migrated.history||[]};if((migrated.version||0)<4)migrated={...migrated,version:4,seen:{race:[],castle:[]}};if((migrated.version||0)<5)migrated={...migrated,version:5,seen:{...(migrated.seen||{}),nonogram:[]}}; return { ...DEFAULT_PROGRESS, ...migrated, best: { ...DEFAULT_PROGRESS.best, ...(migrated.best || {}) }, history: Array.isArray(migrated.history)?migrated.history:[], seen:{race:migrated.seen?.race||[],castle:migrated.seen?.castle||[],nonogram:migrated.seen?.nonogram||[]} }; }
-  catch { return { ...DEFAULT_PROGRESS, best: {}, history: [], seen:{race:[],castle:[],nonogram:[]} }; }
+  try { const data = raw ? JSON.parse(raw) : {}; let migrated = data.version === 1 ? { ...data, version: 2, xp: 999999 } : data; if((migrated.version||0)<3)migrated={...migrated,version:3,history:migrated.history||[]};if((migrated.version||0)<4)migrated={...migrated,version:4,seen:{race:[],castle:[]}};if((migrated.version||0)<5)migrated={...migrated,version:5,seen:{...(migrated.seen||{}),nonogram:[]}};if((migrated.version||0)<6)migrated={...migrated,version:6,seen:{...(migrated.seen||{}),logicGrid:[]}}; return { ...DEFAULT_PROGRESS, ...migrated, best: { ...DEFAULT_PROGRESS.best, ...(migrated.best || {}) }, history: Array.isArray(migrated.history)?migrated.history:[], seen:{race:migrated.seen?.race||[],castle:migrated.seen?.castle||[],nonogram:migrated.seen?.nonogram||[],logicGrid:migrated.seen?.logicGrid||[]} }; }
+  catch { return { ...DEFAULT_PROGRESS, best: {}, history: [], seen:{race:[],castle:[],nonogram:[],logicGrid:[]} }; }
 }
 let progress = loadProgress();
 const saveProgress = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
