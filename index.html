@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>砺智 · 每日脑力训练</title>
+  <style>
+    :root {
+      --bg: #f4f1e9;
+      --surface: #fffdf8;
+      --fg: #20251f;
+      --muted: #73776d;
+      --border: #dddcd2;
+      --accent: #e15d3f;
+      --game-blue: #2876a8;
+      --game-green: #438a61;
+      --accent-soft: color-mix(in oklch, var(--accent) 12%, transparent);
+      --fg-soft: color-mix(in oklch, var(--fg) 6%, transparent);
+      --font-display: "Iowan Old Style", "Songti SC", Georgia, serif;
+      --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+      --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+      --radius: 18px;
+      --shadow: 0 18px 60px color-mix(in oklch, var(--fg) 10%, transparent);
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--fg); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+    button, input { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 3px; }
+    .app { width: min(100%, 1180px); margin: auto; padding: 26px 26px 110px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid var(--fg); border-radius: 14px; font-family: var(--font-display); font-size: 24px; }
+    .brand strong { display: block; font-family: var(--font-display); font-size: 23px; line-height: 1; }
+    .brand small, .muted { color: var(--muted); }
+    .streak { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 13px; }
+    .streak-dot { width: 9px; height: 9px; border-radius: 99px; background: var(--accent); }
+    main { margin-top: 58px; }
+    h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; }
+    h1 { font-size: clamp(44px, 7vw, 78px); line-height: .95; letter-spacing: -.04em; max-width: 9ch; }
+    h2 { font-size: clamp(28px, 4vw, 42px); letter-spacing: -.025em; }
+    h3 { font-size: 22px; }
+    p { text-wrap: pretty; }
+    .eyebrow { margin: 0 0 16px; color: var(--accent); font: 12px var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1.05fr; gap: 72px; align-items: center; }
+    .hero-copy > p:last-of-type { color: var(--muted); font-size: 18px; line-height: 1.65; max-width: 42ch; }
+    .workout { background: var(--surface); border: 1px solid var(--border); border-radius: 26px; padding: 30px; box-shadow: var(--shadow); }
+    .workout-head, .row-between { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .workout small { color: var(--muted); }
+    .progress-track { height: 7px; background: var(--fg-soft); border-radius: 20px; overflow: hidden; margin: 24px 0; }
+    .progress-fill { width: 0%; height: 100%; background: var(--accent); border-radius: inherit; transition: width .35s ease; }
+    .workout-list { display: grid; gap: 10px; margin-bottom: 22px; }
+    .workout-item { display: grid; grid-template-columns: 36px 1fr auto; align-items: center; gap: 12px; padding: 12px; border-radius: 14px; background: var(--fg-soft); }
+    .workout-item span:first-child { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 11px; font: 13px var(--font-mono); }
+    .workout-item b { font-size: 14px; }
+    .workout-item em { color: var(--muted); font: normal 11px var(--font-mono); }
+    .btn { border: 1px solid transparent; border-radius: 13px; padding: 13px 20px; background: transparent; font-weight: 650; cursor: pointer; transition: transform .15s ease, border-color .15s ease; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { width: 100%; background: var(--accent); color: var(--surface); }
+    .btn-secondary { border-color: var(--border); }
+    .section { margin-top: 94px; }
+    .section-head { margin-bottom: 26px; }
+    .section-head p { color: var(--muted); margin: 8px 0 0; }
+    .skill-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--fg); }
+    .skill { padding: 26px 20px 20px 0; border-bottom: 1px solid var(--border); }
+    .skill + .skill { padding-left: 20px; border-left: 1px solid var(--border); }
+    .skill-score { font: 36px var(--font-display); }
+    .skill-label { color: var(--muted); font-size: 13px; margin-top: 5px; }
+    .games { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .game-card { min-height: 220px; display: flex; flex-direction: column; justify-content: space-between; padding: 22px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); cursor: pointer; text-align: left; transition: transform .18s ease, box-shadow .18s ease; }
+    .game-card:hover { transform: translateY(-4px); box-shadow: 0 14px 34px color-mix(in oklch, var(--fg) 8%, transparent); }
+    .game-icon { width: 50px; height: 50px; display: grid; place-items: center; border: 1px solid var(--fg); border-radius: 15px; font: 18px var(--font-mono); }
+    .game-card p { color: var(--muted); font-size: 14px; margin: 7px 0 0; line-height: 1.5; }
+    .game-meta { display: flex; justify-content: space-between; color: var(--muted); font: 11px var(--font-mono); text-transform: uppercase; }
+    .bottom-nav { position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); z-index: 15; transform: translateX(-50%); display: flex; gap: 4px; padding: 7px; border: 1px solid var(--border); border-radius: 18px; background: color-mix(in oklch, var(--surface) 90%, transparent); backdrop-filter: blur(18px); box-shadow: var(--shadow); }
+    .nav-btn { border: 0; background: transparent; padding: 9px 15px; border-radius: 12px; color: var(--muted); cursor: pointer; }
+    .nav-btn.active { background: var(--fg); color: var(--surface); }
+    .game-screen { position: fixed; inset: 0; z-index: 30; display: none; place-items: center; padding: 22px; background: var(--bg); }
+    .game-screen.open { display: grid; }
+    .game-shell { width: min(100%, 560px); min-height: min(720px, calc(100vh - 44px)); display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: 28px; padding: 24px; }
+    .game-top { display: flex; align-items: center; justify-content: space-between; }
+    .icon-btn { width: 42px; height: 42px; border: 1px solid var(--border); border-radius: 13px; background: transparent; cursor: pointer; }
+    .lives { font: 13px var(--font-mono); color: var(--muted); }
+    .game-stage { flex: 1; display: grid; place-items: center; text-align: center; padding: 30px 0; }
+    .stage-inner { width: 100%; }
+    .stage-inner h2 { margin-bottom: 10px; }
+    .stage-inner > p { color: var(--muted); line-height: 1.6; }
+    .number-display { font: clamp(56px, 14vw, 96px) var(--font-mono); letter-spacing: .08em; margin: 50px 0; }
+    .answer { width: 100%; border: 0; border-bottom: 2px solid var(--fg); background: transparent; padding: 16px 0; text-align: center; font: 40px var(--font-mono); color: var(--fg); }
+    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 26px; }
+    .key { min-height: 54px; border: 1px solid var(--border); border-radius: 13px; background: var(--bg); font: 18px var(--font-mono); cursor: pointer; }
+    .key.submit { background: var(--fg); color: var(--surface); }
+    .feedback { min-height: 28px; font-weight: 650; margin-top: 16px; }
+    .choice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 34px; }
+    .choice { min-height: 64px; border: 1px solid var(--border); border-radius: 14px; background: var(--bg); font-weight: 700; cursor: pointer; }
+    .choice:hover { border-color: var(--fg); }
+    .trial-word { font: 700 clamp(58px, 16vw, 100px)/1 var(--font-body); margin: 50px 0 12px; }
+    .ink-red { color: var(--accent); } .ink-blue { color: var(--game-blue); } .ink-green { color: var(--game-green); } .ink-black { color: var(--fg); }
+    .math-expression { font: clamp(48px, 13vw, 80px) var(--font-mono); margin: 52px 0; letter-spacing: -.04em; }
+    .binary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .binary-grid .choice { min-height: 72px; font-size: 18px; }
+    .path-board { width: min(100%, 390px); display: grid; gap: 7px; margin: 30px auto; }
+    .path-cell { aspect-ratio: 1; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); cursor: pointer; font: 12px var(--font-mono); }
+    .path-cell.shown, .path-cell.selected { background: var(--fg); color: var(--surface); border-color: var(--fg); }
+    .path-cell.start { box-shadow: inset 0 0 0 3px var(--accent); }
+    .sudoku-board { width: min(100%, 450px); display: grid; grid-template-columns: repeat(9, 1fr); margin: 24px auto; border: 2px solid var(--fg); }
+    .sudoku-cell { aspect-ratio: 1; padding: 0; border: 0; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--surface); font: clamp(13px, 4vw, 20px) var(--font-mono); cursor: pointer; }
+    .sudoku-cell:nth-child(3n) { border-right-color: var(--fg); } .sudoku-cell:nth-child(9n) { border-right: 0; }
+    .sudoku-cell:nth-child(n+19):nth-child(-n+27), .sudoku-cell:nth-child(n+46):nth-child(-n+54) { border-bottom-color: var(--fg); }
+    .sudoku-cell.given { background: var(--fg-soft); font-weight: 800; cursor: default; } .sudoku-cell.selected { background: var(--accent-soft); }
+    .number-pad { display: grid; grid-template-columns: repeat(9, 1fr); gap: 5px; }
+    .number-pad button { min-height: 42px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg); cursor: pointer; font-family: var(--font-mono); }
+    .tile-board { width: min(100%, 430px); display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; padding: 10px; margin: 28px auto; background: var(--fg-soft); border-radius: 18px; touch-action: none; }
+    .tile { aspect-ratio: 1; display: grid; place-items: center; border-radius: 12px; background: var(--surface); font: 700 clamp(20px, 7vw, 34px) var(--font-display); }
+    .tile[data-value="0"] { color: transparent; background: color-mix(in oklch, var(--fg) 4%, transparent); }
+    .tile[data-value="2"], .tile[data-value="4"] { background: var(--accent-soft); }
+    .tile[data-value="8"], .tile[data-value="16"], .tile[data-value="32"] { background: var(--accent); color: var(--surface); }
+    .tile[data-value="64"], .tile[data-value="128"], .tile[data-value="256"], .tile[data-value="512"], .tile[data-value="1024"], .tile[data-value="2048"] { background: var(--fg); color: var(--surface); }
+    .slide-board { width: min(100%, 430px); display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 28px auto; }
+    .slide-tile { aspect-ratio: 1; border: 1px solid var(--fg); border-radius: 13px; background: var(--surface); font: 700 clamp(20px, 7vw, 32px) var(--font-mono); cursor: pointer; }
+    .slide-tile.empty { border-color: transparent; background: var(--fg-soft); cursor: default; }
+    .mine-board { width: min(100%, 440px); display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; margin: 24px auto; touch-action: manipulation; }
+    .mine-cell { aspect-ratio: 1; min-width: 0; padding: 0; border: 1px solid var(--border); border-radius: 6px; background: var(--fg); color: var(--surface); font: 700 clamp(10px, 3vw, 15px) var(--font-mono); cursor: pointer; }
+    .mine-cell.revealed { background: var(--surface); color: var(--fg); cursor: default; } .mine-cell.flagged { color: var(--accent); }
+    .game-actions { display: flex; justify-content: center; gap: 9px; flex-wrap: wrap; }
+    .huarong-levels { max-height: 430px; overflow: auto; display: grid; grid-template-columns: repeat(2,1fr); gap: 9px; margin-top: 26px; text-align: left; }
+    .huarong-board { position: relative; width: min(100%, 360px); aspect-ratio: 4/5; margin: 20px auto; border: 8px solid var(--fg); border-bottom-color: var(--accent); border-radius: 8px 8px 18px 18px; background: color-mix(in oklch,var(--accent) 7%,var(--bg)); overflow: hidden; }
+    .hr-piece { position: absolute; padding: 0; border: 2px solid var(--surface); border-radius: 9px; background-image: url('assets/huarong-characters.png'); background-size: 300% 200%; background-color: var(--surface); box-shadow: inset 0 0 0 2px color-mix(in oklch,var(--fg) 45%,transparent); cursor: pointer; transition: left .16s ease, top .16s ease, transform .12s ease; overflow: hidden; }
+    .hr-piece::after { content: attr(data-name); position: absolute; inset: auto 2px 2px; padding: 2px; border-radius: 5px; background: color-mix(in oklch,var(--fg) 74%,transparent); color: var(--surface); font: 10px var(--font-body); text-align: center; }
+    .hr-piece.selected { z-index: 2; transform: scale(.96); box-shadow: 0 0 0 3px var(--accent); }
+    .portrait-cao { background-position: 0 0; }.portrait-guan { background-position: 50% 0; }.portrait-zhang { background-position: 100% 0; }.portrait-zhao { background-position: 0 100%; }.portrait-huang { background-position: 50% 100%; }.portrait-guard { background-position: 100% 100%; }
+    .dpad { display: grid; grid-template-columns: repeat(3,52px); justify-content: center; gap: 6px; }
+    .dpad button { width: 52px; height: 46px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); cursor: pointer; }
+    .result-score { font: 90px/1 var(--font-display); margin: 30px 0 8px; }
+    .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 28px 0; }
+    .result-grid div { padding: 14px 8px; border-top: 1px solid var(--border); }
+    .result-grid strong { display: block; font: 20px var(--font-mono); }
+    .result-grid small { color: var(--muted); }
+    .toast { position: fixed; z-index: 50; left: 50%; top: 24px; transform: translate(-50%, -120px); background: var(--fg); color: var(--surface); border-radius: 12px; padding: 11px 16px; transition: transform .25s ease; }
+    .toast.show { transform: translate(-50%, 0); }
+    @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 44px; } .skill-grid, .games { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .app { padding: 20px 16px 110px; } main { margin-top: 42px; } .streak span:last-child { display: none; } .skill-grid { grid-template-columns: 1fr 1fr; } .games { grid-template-columns: 1fr; } .game-card { min-height: 170px; } .game-shell { min-height: calc(100vh - 24px); border-radius: 22px; padding: 18px; } .game-screen { padding: 12px; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="app" id="home">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">砺</span><div><strong>砺智</strong><small>每天锋利一点</small></div></div>
+      <div class="streak"><span class="streak-dot"></span><b id="streakCount">1</b><span>天连续训练</span></div>
+    </header>
+    <main>
+      <section class="hero-grid" data-od-id="daily-workout">
+        <div class="hero-copy"><p class="eyebrow">今日训练 · 约 6 分钟</p><h1>唤醒你的思考力。</h1><p>短时、专注、循序渐进。完成今天的四项练习，建立属于你的能力曲线。</p></div>
+        <article class="workout">
+          <div class="workout-head"><div><small>每日组合</small><h3>晨间校准</h3></div><span class="muted" id="workoutProgress">0 / 4</span></div>
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="workout-list">
+            <div class="workout-item"><span>01</span><b>数字闪忆</b><em>记忆</em></div>
+            <div class="workout-item"><span>02</span><b>颜色冲突</b><em>专注</em></div>
+            <div class="workout-item"><span>03</span><b>极速运算</b><em>敏捷</em></div>
+            <div class="workout-item"><span>04</span><b>路径回溯</b><em>推理</em></div>
+          </div>
+          <button class="btn btn-primary" id="startWorkout">开始今日训练</button>
+        </article>
+      </section>
+
+      <section class="section" data-od-id="ability-overview">
+        <div class="section-head"><h2>能力概览</h2><p>完成训练后，这里会逐渐形成你的个人基线。</p></div>
+        <div class="skill-grid">
+          <div class="skill"><div class="skill-score" id="memoryScore">—</div><div class="skill-label">记忆力</div></div>
+          <div class="skill"><div class="skill-score" id="focusScore">—</div><div class="skill-label">专注力</div></div>
+          <div class="skill"><div class="skill-score" id="agilityScore">—</div><div class="skill-label">思维敏捷</div></div>
+          <div class="skill"><div class="skill-score" id="reasonScore">—</div><div class="skill-label">问题解决</div></div>
+        </div>
+      </section>
+
+      <section class="section" data-od-id="game-library">
+        <div class="section-head row-between"><div><h2>全部游戏</h2><p>认知训练与传统益智，各有各的乐趣。</p></div><span class="muted">9 款</span></div>
+        <div class="games" id="games"></div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="bottom-nav" aria-label="主导航"><button class="nav-btn active">训练</button><button class="nav-btn" data-soon="进度报告">进度</button><button class="nav-btn" data-soon="个人中心">我的</button></nav>
+  <div class="toast" id="toast" role="status"></div>
+
+  <section class="game-screen" id="gameScreen" aria-modal="true" role="dialog" data-od-id="number-flash-game">
+    <div class="game-shell">
+      <div class="game-top"><button class="icon-btn" id="closeGame" aria-label="退出游戏">×</button><span class="lives" id="lives">失误 0 / 3</span><span class="lives" id="level">等级 1</span></div>
+      <div class="game-stage" id="gameStage"></div>
+    </div>
+  </section>
+
+  <script>
+    const GAMES = [
+      { id: 'number', icon: '123', title: '数字闪忆', desc: '记住一闪而过的数字，并按原顺序复现。', type: '记忆训练', ready: true },
+      { id: 'color', icon: 'Aa', title: '颜色冲突', desc: '忽略文字含义，快速判断它真正的颜色。', type: '专注训练', ready: true },
+      { id: 'math', icon: '±', title: '极速运算', desc: '在倒计时内判断算式是否成立。', type: '敏捷训练', ready: true },
+      { id: 'path', icon: '↗', title: '路径回溯', desc: '观察路线，隐藏后完整地重走一遍。', type: '推理训练', ready: true },
+      { id: 'sudoku', icon: '9×', title: '数独', desc: '用逻辑补全九宫格，每行每列不重复。', type: '经典益智', ready: true },
+      { id: '2048', icon: '2ⁿ', title: '2048', desc: '合并相同数字，规划每一步的空间。', type: '经典益智', ready: true },
+      { id: 'slide', icon: '▦', title: '华容滑块', desc: '移动方块，以更少步数还原目标。', type: '经典益智', ready: true },
+      { id: 'huarong', icon: '将', title: '华容道', desc: '调兵遣将，为曹操打开华容道出口。', type: '经典益智', ready: true },
+      { id: 'mine', icon: '·×', title: '扫雷', desc: '根据数字线索，找出所有隐藏雷区。', type: '经典益智', ready: true }
+    ];
+    const STORAGE_KEY = 'lizhi-progress-v1';
+    const DEFAULT_PROGRESS = { version: 2, streak: 1, xp: 999999, sessions: 0, completedToday: 0, best: {} };
+    function loadProgress(raw = localStorage.getItem(STORAGE_KEY)) {
+      try { const data = raw ? JSON.parse(raw) : {}; const migrated = data.version === 1 ? { ...data, version: 2, xp: 999999 } : data; return { ...DEFAULT_PROGRESS, ...migrated, best: { ...DEFAULT_PROGRESS.best, ...(migrated.best || {}) } }; }
+      catch { return { ...DEFAULT_PROGRESS, best: {} }; }
+    }
+    let progress = loadProgress();
+    const saveProgress = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    const gamesEl = document.getElementById('games');
+    gamesEl.innerHTML = GAMES.map(g => `<button class="game-card" data-game="${g.id}"><span class="game-icon">${g.icon}</span><div><h3>${g.title}</h3><p>${g.desc}</p></div><span class="game-meta"><span>${g.type}</span><span>开始 →</span></span></button>`).join('');
+
+    function renderProgress() {
+      document.getElementById('streakCount').textContent = progress.streak;
+      document.getElementById('workoutProgress').textContent = `${Math.min(progress.completedToday, 4)} / 4`;
+      document.getElementById('progressFill').style.width = `${Math.min(progress.completedToday, 4) * 25}%`;
+      document.getElementById('memoryScore').textContent = progress.best.number || '—';
+      document.getElementById('focusScore').textContent = progress.best.color || '—';
+      document.getElementById('agilityScore').textContent = progress.best.math || '—';
+      document.getElementById('reasonScore').textContent = progress.best.path || '—';
+    }
+    function toast(message) {
+      const el = document.getElementById('toast'); el.textContent = message; el.classList.add('show');
+      clearTimeout(toast.timer); toast.timer = setTimeout(() => el.classList.remove('show'), 1800);
+    }
+    document.querySelectorAll('[data-soon]').forEach(b => b.addEventListener('click', () => toast(`${b.dataset.soon}将在下一阶段开放`)));
+    gamesEl.addEventListener('click', e => {
+      const card = e.target.closest('[data-game]'); if (!card) return;
+      const launchers = { number: openNumberGame, color: openColorGame, math: openMathGame, path: openPathGame, sudoku: openSudoku, '2048': open2048, slide: openSliding, huarong: openHuarong, mine: openMines };
+      launchers[card.dataset.game] ? launchers[card.dataset.game]() : toast('这款游戏已列入下一阶段');
+    });
+    document.getElementById('startWorkout').addEventListener('click', openNumberGame);
+
+    const gameScreen = document.getElementById('gameScreen');
+    const stage = document.getElementById('gameStage');
+    let state;
+    function initialState() { return { level: 1, length: 3, mistakes: 0, correct: 0, rounds: 0, score: 0, sequence: '', startedAt: 0, timer: null }; }
+    function makeSequence(length, random = Math.random) {
+      let value = String(1 + Math.floor(random() * 9));
+      while (value.length < length) value += Math.floor(random() * 10);
+      return value;
+    }
+    function calculateRoundScore(length, responseMs, correct) {
+      if (!correct) return 0;
+      return Math.max(10, Math.round(length * 120 - Math.max(0, responseMs - 1000) / 20));
+    }
+    function syncGameMeta() {
+      document.getElementById('lives').textContent = `失误 ${state.mistakes} / 3`;
+      document.getElementById('level').textContent = `等级 ${state.level}`;
+    }
+    function openNumberGame() {
+      state = initialState(); gameScreen.classList.add('open'); document.body.style.overflow = 'hidden'; syncGameMeta();
+      stage.innerHTML = `<div class="stage-inner"><p class="eyebrow">记忆训练</p><h2>数字闪忆</h2><p>数字只会出现片刻。记住顺序，然后准确输入。</p><div style="margin-top:36px"><button class="btn btn-primary" id="beginRound">我准备好了</button></div></div>`;
+      document.getElementById('beginRound').addEventListener('click', showSequence);
+    }
+    function showSequence() {
+      state.sequence = makeSequence(state.length); state.rounds++; syncGameMeta();
+      stage.innerHTML = `<div class="stage-inner"><p class="muted">记住这个数字</p><div class="number-display">${state.sequence}</div><p class="muted">${state.length} 位</p></div>`;
+      clearTimeout(state.timer); state.timer = setTimeout(showAnswer, Math.max(900, 1800 - state.length * 90));
+    }
+    function showAnswer() {
+      state.startedAt = performance.now();
+      stage.innerHTML = `<div class="stage-inner"><h2>刚才是什么？</h2><input class="answer" id="answer" inputmode="numeric" autocomplete="off" maxlength="12" aria-label="输入刚才的数字"><div class="keypad">${[1,2,3,4,5,6,7,8,9].map(n => `<button class="key" data-key="${n}">${n}</button>`).join('')}<button class="key" data-key="back">⌫</button><button class="key" data-key="0">0</button><button class="key submit" data-key="submit">确认</button></div><div class="feedback" id="feedback" aria-live="polite"></div></div>`;
+      const input = document.getElementById('answer'); input.focus();
+      stage.querySelector('.keypad').addEventListener('click', e => { const key = e.target.dataset.key; if (!key) return; if (key === 'back') input.value = input.value.slice(0, -1); else if (key === 'submit') submitAnswer(); else if (input.value.length < 12) input.value += key; });
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') submitAnswer(); });
+    }
+    function submitAnswer() {
+      const input = document.getElementById('answer'); if (!input || !input.value) return;
+      const isCorrect = input.value === state.sequence; const elapsed = performance.now() - state.startedAt; state.score += calculateRoundScore(state.length, elapsed, isCorrect);
+      if (isCorrect) { state.correct++; state.length = Math.min(12, state.length + 1); state.level++; }
+      else { state.mistakes++; state.length = Math.max(3, state.length - 1); }
+      syncGameMeta();
+      const feedback = document.getElementById('feedback'); feedback.textContent = isCorrect ? '正确，难度提升' : `答案是 ${state.sequence}`;
+      input.disabled = true; stage.querySelectorAll('.key').forEach(k => k.disabled = true);
+      clearTimeout(state.timer); state.timer = setTimeout(() => state.mistakes >= 3 ? showResults() : showSequence(), 1050);
+    }
+    function showResults() {
+      const accuracy = state.rounds ? Math.round(state.correct / state.rounds * 100) : 0;
+      const finalScore = Math.min(999, Math.round(state.score / Math.max(1, state.rounds)));
+      const isBest = finalScore > (progress.best.number || 0);
+      progress.best.number = Math.max(finalScore, progress.best.number || 0); progress.sessions++; progress.xp += state.correct * 10;
+      progress.completedToday = Math.min(4, progress.completedToday + 1); saveProgress(); renderProgress();
+      stage.innerHTML = `<div class="stage-inner"><p class="eyebrow">训练完成</p><h2>${isBest ? '新的个人最佳' : '不错的练习'}</h2><div class="result-score">${finalScore}</div><p class="muted">记忆力得分</p><div class="result-grid"><div><strong>${accuracy}%</strong><small>准确率</small></div><div><strong>${state.correct}</strong><small>答对</small></div><div><strong>${state.level}</strong><small>最高等级</small></div></div><button class="btn btn-primary" id="replay">再练一次</button><button class="btn btn-secondary" id="finish" style="width:100%;margin-top:9px">返回首页</button></div>`;
+      document.getElementById('replay').addEventListener('click', openNumberGame); document.getElementById('finish').addEventListener('click', closeGame);
+    }
+
+    const COLORS = [
+      { name: '红色', className: 'ink-red' }, { name: '蓝色', className: 'ink-blue' },
+      { name: '绿色', className: 'ink-green' }, { name: '黑色', className: 'ink-black' }
+    ];
+    function completeGame(id, title, score, stats, replay) {
+      const finalScore = Math.max(0, Math.min(999, Math.round(score)));
+      const isBest = finalScore > (progress.best[id] || 0);
+      progress.best[id] = Math.max(finalScore, progress.best[id] || 0);
+      progress.sessions++; progress.xp += Math.round(finalScore / 10); progress.completedToday = Math.min(4, progress.completedToday + 1);
+      saveProgress(); renderProgress();
+      stage.innerHTML = `<div class="stage-inner"><p class="eyebrow">训练完成</p><h2>${isBest ? '新的个人最佳' : title}</h2><div class="result-score">${finalScore}</div><p class="muted">${title}得分</p><div class="result-grid">${stats.map(s => `<div><strong>${s.value}</strong><small>${s.label}</small></div>`).join('')}</div><button class="btn btn-primary" id="replayGeneric">再练一次</button><button class="btn btn-secondary" id="finishGeneric" style="width:100%;margin-top:9px">返回首页</button></div>`;
+      document.getElementById('replayGeneric').addEventListener('click', replay);
+      document.getElementById('finishGeneric').addEventListener('click', closeGame);
+    }
+    function prepareGeneric(title) {
+      gameScreen.classList.add('open'); document.body.style.overflow = 'hidden';
+      document.getElementById('lives').textContent = title; document.getElementById('level').textContent = '准备';
+    }
+
+    function makeColorTrial(random = Math.random) {
+      const word = Math.floor(random() * COLORS.length);
+      let ink = Math.floor(random() * COLORS.length);
+      if (ink === word && random() < .75) ink = (ink + 1 + Math.floor(random() * 3)) % COLORS.length;
+      return { word, ink };
+    }
+    function openColorGame() {
+      state = { kind: 'color', rounds: 0, correct: 0, score: 0, mistakes: 0, trial: null, startedAt: 0, timer: null };
+      prepareGeneric('颜色冲突');
+      stage.innerHTML = `<div class="stage-inner"><p class="eyebrow">专注训练</p><h2>颜色冲突</h2><p>选择文字的字体颜色，不要选择它写出的颜色。</p><div style="margin-top:36px"><button class="btn btn-primary" id="beginColor">开始挑战</button></div></div>`;
+      document.getElementById('beginColor').addEventListener('click', nextColorTrial);
+    }
+    function nextColorTrial() {
+      if (state.rounds >= 15 || state.mistakes >= 3) return finishColor();
+      state.trial = makeColorTrial(); state.rounds++; state.startedAt = performance.now();
+      document.getElementById('lives').textContent = `失误 ${state.mistakes} / 3`; document.getElementById('level').textContent = `${state.rounds} / 15`;
+      const t = state.trial;
+      stage.innerHTML = `<div class="stage-inner"><p class="muted">字体是什么颜色？</p><div class="trial-word ${COLORS[t.ink].className}">${COLORS[t.word].name}</div><div class="choice-grid">${COLORS.map((c, i) => `<button class="choice" data-color="${i}">${c.name}</button>`).join('')}</div><div class="feedback" aria-live="polite"></div></div>`;
+      stage.querySelector('.choice-grid').addEventListener('click', e => { const value = e.target.dataset.color; if (value === undefined || e.target.disabled) return; answerColor(Number(value)); });
+    }
+    function answerColor(value) {
+      const correct = value === state.trial.ink; const elapsed = performance.now() - state.startedAt;
+      if (correct) { state.correct++; state.score += Math.max(30, 110 - elapsed / 30); } else state.mistakes++;
+      stage.querySelectorAll('.choice').forEach(b => b.disabled = true);
+      stage.querySelector('.feedback').textContent = correct ? '判断正确' : `正确答案：${COLORS[state.trial.ink].name}`;
+      state.timer = setTimeout(nextColorTrial, 650);
+    }
+    function finishColor() {
+      const accuracy = Math.round(state.correct / Math.max(1, state.rounds) * 100);
+      completeGame('color', '专注力', state.score / Math.max(1, state.rounds) * 9, [
+        { value: `${accuracy}%`, label: '准确率' }, { value: state.correct, label: '答对' }, { value: state.rounds, label: '题目' }
+      ], openColorGame);
+    }
+
+    function makeMathTrial(level = 1, random = Math.random) {
+      const max = level < 5 ? 12 : level < 10 ? 25 : 50;
+      const op = level >= 8 && random() < .28 ? '×' : random() < .5 ? '+' : '−';
+      let a = 1 + Math.floor(random() * max), b = 1 + Math.floor(random() * max), actual;
+      if (op === '−' && b > a) [a, b] = [b, a];
+      actual = op === '+' ? a + b : op === '−' ? a - b : a * Math.min(b, 9);
+      if (op === '×') b = Math.min(b, 9);
+      const isTrue = random() < .5; const shown = isTrue ? actual : actual + (random() < .5 ? -1 : 1) * (1 + Math.floor(random() * 3));
+      return { a, b, op, shown, isTrue, actual };
+    }
+    function openMathGame() {
+      state = { kind: 'math', rounds: 0, correct: 0, score: 0, mistakes: 0, trial: null, startedAt: 0, timer: null };
+      prepareGeneric('极速运算');
+      stage.innerHTML = `<div class="stage-inner"><p class="eyebrow">敏捷训练</p><h2>极速运算</h2><p>判断屏幕上的算式是正确还是错误，共 15 题。</p><div style="margin-top:36px"><button class="btn btn-primary" id="beginMath">开始挑战</button></div></div>`;
+      document.getElementById('beginMath').addEventListener('click', nextMathTrial);
+    }
+    function nextMathTrial() {
+      if (state.rounds >= 15 || state.mistakes >= 3) return finishMath();
+      state.trial = makeMathTrial(state.rounds + 1); state.rounds++; state.startedAt = performance.now();
+      document.getElementById('lives').textContent = `失误 ${state.mistakes} / 3`; document.getElementById('level').textContent = `${state.rounds} / 15`;
+      const t = state.trial;
+      stage.innerHTML = `<div class="stage-inner"><p class="muted">这个算式成立吗？</p><div class="math-expression">${t.a} ${t.op} ${t.b} = ${t.shown}</div><div class="binary-grid"><button class="choice" data-math="false">错误</button><button class="choice" data-math="true">正确</button></div><div class="feedback" aria-live="polite"></div></div>`;
+      stage.querySelector('.binary-grid').addEventListener('click', e => { if (!e.target.dataset.math || e.target.disabled) return; answerMath(e.target.dataset.math === 'true'); });
+    }
+    function answerMath(value) {
+      const correct = value === state.trial.isTrue; const elapsed = performance.now() - state.startedAt;
+      if (correct) { state.correct++; state.score += Math.max(25, 115 - elapsed / 35); } else state.mistakes++;
+      stage.querySelectorAll('.choice').forEach(b => b.disabled = true);
+      stage.querySelector('.feedback').textContent = correct ? '判断正确' : `实际答案是 ${state.trial.actual}`;
+      state.timer = setTimeout(nextMathTrial, 600);
+    }
+    function finishMath() {
+      const accuracy = Math.round(state.correct / Math.max(1, state.rounds) * 100);
+      completeGame('math', '思维敏捷', state.score / Math.max(1, state.rounds) * 9, [
+        { value: `${accuracy}%`, label: '准确率' }, { value: state.correct, label: '答对' }, { value: state.rounds, label: '题目' }
+      ], openMathGame);
+    }
+
+    function makePath(size, length, random = Math.random) {
+      const cells = [{ r: Math.floor(random() * size), c: Math.floor(random() * size) }];
+      while (cells.length < length) {
+        const last = cells[cells.length - 1];
+        const candidates = [[1,0],[-1,0],[0,1],[0,-1]].map(([dr,dc]) => ({ r:last.r+dr, c:last.c+dc })).filter(p => p.r >= 0 && p.r < size && p.c >= 0 && p.c < size && !cells.some(x => x.r === p.r && x.c === p.c));
+        if (!candidates.length) return makePath(size, length, random);
+        cells.push(candidates[Math.floor(random() * candidates.length)]);
+      }
+      return cells;
+    }
+    function openPathGame() {
+      state = { kind: 'path', round: 0, correct: 0, mistakes: 0, score: 0, path: [], selected: [], timer: null };
+      prepareGeneric('路径回溯');
+      stage.innerHTML = `<div class="stage-inner"><p class="eyebrow">推理训练</p><h2>路径回溯</h2><p>记住方格亮起的顺序，隐藏后从起点依次点选。</p><div style="margin-top:36px"><button class="btn btn-primary" id="beginPath">开始挑战</button></div></div>`;
+      document.getElementById('beginPath').addEventListener('click', nextPathRound);
+    }
+    function nextPathRound() {
+      if (state.round >= 5 || state.mistakes >= 3) return finishPath();
+      state.round++; const size = state.round >= 4 ? 5 : 4; const length = 3 + state.round;
+      state.path = makePath(size, length); state.selected = [];
+      document.getElementById('lives').textContent = `失误 ${state.mistakes} / 3`; document.getElementById('level').textContent = `${state.round} / 5`;
+      renderPathBoard(size, true);
+      state.timer = setTimeout(() => renderPathBoard(size, false), 1200 + length * 170);
+    }
+    function renderPathBoard(size, reveal) {
+      const positions = new Map(state.path.map((p, i) => [`${p.r}-${p.c}`, i]));
+      let cells = '';
+      for (let r = 0; r < size; r++) for (let c = 0; c < size; c++) {
+        const order = positions.get(`${r}-${c}`); const shown = reveal && order !== undefined;
+        cells += `<button class="path-cell ${shown ? 'shown' : ''} ${order === 0 ? 'start' : ''}" data-r="${r}" data-c="${c}" ${reveal ? 'disabled' : ''}>${shown ? order + 1 : ''}</button>`;
+      }
+      stage.innerHTML = `<div class="stage-inner"><p class="muted">${reveal ? '记住亮起的顺序' : '从起点依次点选'}</p><div class="path-board" style="grid-template-columns:repeat(${size},1fr)">${cells}</div><div class="feedback" aria-live="polite"></div></div>`;
+      if (!reveal) stage.querySelector('.path-board').addEventListener('click', answerPath);
+    }
+    function answerPath(e) {
+      const cell = e.target.closest('.path-cell'); if (!cell) return;
+      const expected = state.path[state.selected.length]; const correct = Number(cell.dataset.r) === expected.r && Number(cell.dataset.c) === expected.c;
+      if (!correct) {
+        state.mistakes++; stage.querySelector('.feedback').textContent = '顺序不对，下一轮再来';
+        stage.querySelectorAll('.path-cell').forEach(b => b.disabled = true); state.timer = setTimeout(nextPathRound, 850); return;
+      }
+      state.selected.push(expected); cell.classList.add('selected'); cell.textContent = state.selected.length; cell.disabled = true;
+      if (state.selected.length === state.path.length) { state.correct++; state.score += state.path.length * 130; stage.querySelector('.feedback').textContent = '路线完全正确'; stage.querySelectorAll('.path-cell').forEach(b => b.disabled = true); state.timer = setTimeout(nextPathRound, 750); }
+    }
+    function finishPath() {
+      completeGame('path', '问题解决', state.score / Math.max(1, state.round), [
+        { value: state.correct, label: '完成路线' }, { value: state.round, label: '挑战轮数' }, { value: `${state.mistakes}/3`, label: '失误' }
+      ], openPathGame);
+    }
+
+    function shuffle(values, random = Math.random) { const out=[...values]; for(let i=out.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]];} return out; }
+    function sudokuCandidates(board, index) {
+      const used=new Set(), row=Math.floor(index/9), col=index%9;
+      for(let i=0;i<9;i++){used.add(board[row*9+i]);used.add(board[i*9+col]);}
+      const br=Math.floor(row/3)*3,bc=Math.floor(col/3)*3;for(let r=br;r<br+3;r++)for(let c=bc;c<bc+3;c++)used.add(board[r*9+c]);
+      return [1,2,3,4,5,6,7,8,9].filter(n=>!used.has(n));
+    }
+    function solveSudoku(board, limit=2) {
+      let count=0, solution=null;
+      function search(){if(count>=limit)return;let target=-1,choices=null;for(let i=0;i<81;i++)if(board[i]===0){const c=sudokuCandidates(board,i);if(!c.length)return;if(!choices||c.length<choices.length){target=i;choices=c;if(c.length===1)break;}}if(target<0){count++;if(!solution)solution=[...board];return;}for(const n of choices){board[target]=n;search();board[target]=0;if(count>=limit)return;}}
+      search(); return { count, solution };
+    }
+    function generateSudoku(difficulty='easy', random=Math.random) {
+      const base=(r,c)=>(r*3+Math.floor(r/3)+c)%9;
+      const bands=shuffle([0,1,2],random), stacks=shuffle([0,1,2],random);
+      const rows=bands.flatMap(b=>shuffle([0,1,2],random).map(r=>b*3+r)); const cols=stacks.flatMap(s=>shuffle([0,1,2],random).map(c=>s*3+c)); const nums=shuffle([1,2,3,4,5,6,7,8,9],random);
+      const solution=rows.flatMap(r=>cols.map(c=>nums[base(r,c)])); const puzzle=[...solution]; const target={easy:42,medium:34,hard:28}[difficulty];
+      for(const index of shuffle([...Array(81)].map((_,i)=>i),random)){if(puzzle.filter(Boolean).length<=target)break;const keep=puzzle[index];puzzle[index]=0;if(solveSudoku([...puzzle],2).count!==1)puzzle[index]=keep;}
+      return { puzzle, solution, clues:puzzle.filter(Boolean).length };
+    }
+    function openSudoku() {
+      state = { kind:'sudoku-menu', timer:null }; prepareGeneric('数独');
+      stage.innerHTML=`<div class="stage-inner"><p class="eyebrow">每局唯一解</p><h2>选择数独难度</h2><p>关卡会实时随机生成，并经过求解器验证，不会重复背题。</p><div class="choice-grid"><button class="choice" data-sudoku-level="easy">初级<br><small>约 42 条线索</small></button><button class="choice" data-sudoku-level="medium">中级<br><small>约 34 条线索</small></button><button class="choice" data-sudoku-level="hard">困难<br><small>约 28 条线索</small></button><button class="choice" id="sudokuHelp">玩法教程</button></div></div>`;
+      stage.querySelector('.choice-grid').addEventListener('click',e=>{if(e.target.closest('[data-sudoku-level]'))startSudoku(e.target.closest('[data-sudoku-level]').dataset.sudokuLevel);});
+      document.getElementById('sudokuHelp').addEventListener('click',()=>toast('每行、每列、每个 3×3 宫内，数字 1–9 都不能重复'));
+    }
+    function startSudoku(difficulty) {
+      document.getElementById('lives').textContent='正在生成…'; const generated=generateSudoku(difficulty);
+      state={kind:'sudoku',difficulty,puzzle:[...generated.puzzle],solution:generated.solution,board:[...generated.puzzle],clues:generated.clues,selected:-1,mistakes:0,startedAt:Date.now(),timer:null};renderSudoku();
+    }
+    function renderSudoku() {
+      const labels={easy:'初级',medium:'中级',hard:'困难'};document.getElementById('lives').textContent=`错误 ${state.mistakes}`;document.getElementById('level').textContent=`${labels[state.difficulty]} · ${state.clues} 线索`;
+      stage.innerHTML = `<div class="stage-inner"><h2>数独</h2><p class="muted">选中空格，再填入数字</p><div class="sudoku-board">${state.board.map((v,i) => `<button class="sudoku-cell ${state.puzzle[i] ? 'given' : ''} ${state.selected === i ? 'selected' : ''}" data-sudoku="${i}" ${state.puzzle[i] ? 'disabled' : ''}>${v || ''}</button>`).join('')}</div><div class="number-pad">${[1,2,3,4,5,6,7,8,9].map(n => `<button data-number="${n}">${n}</button>`).join('')}</div><div class="game-actions" style="margin-top:10px"><button class="btn btn-secondary" id="eraseSudoku">清除</button><button class="btn btn-secondary" id="hintSudoku">智能提示 · 20 XP</button><button class="btn btn-secondary" id="newSudoku">换一局</button></div></div>`;
+      stage.querySelector('.sudoku-board').addEventListener('click', e => { const i = e.target.dataset.sudoku; if (i === undefined) return; state.selected = Number(i); renderSudoku(); });
+      stage.querySelector('.number-pad').addEventListener('click', e => { const n = e.target.dataset.number; if (n && state.selected >= 0) setSudoku(Number(n)); });
+      document.getElementById('eraseSudoku').addEventListener('click', () => { if (state.selected >= 0) { state.board[state.selected] = 0; renderSudoku(); } });
+      document.getElementById('hintSudoku').addEventListener('click',()=>{const empty=state.board.findIndex((v,i)=>!v&&!state.puzzle[i]);if(empty<0)return;if(progress.xp<20)return toast('积分不足，完成训练可以获得 XP');progress.xp-=20;state.board[empty]=state.solution[empty];saveProgress();renderSudoku();});
+      document.getElementById('newSudoku').addEventListener('click',openSudoku);
+    }
+    function setSudoku(value) {
+      if (state.solution[state.selected] !== value) state.mistakes++;
+      state.board[state.selected] = value;
+      if (state.board.every((v,i)=>v===state.solution[i])) {
+        const seconds = Math.round((Date.now() - state.startedAt) / 1000); const score = Math.max(100, 950 - state.mistakes * 40 - seconds / 3);
+        completeGame('sudoku', '数独', score, [{ value: state.mistakes, label: '错误' }, { value: `${seconds}s`, label: '用时' }, { value: state.difficulty, label: '难度' }], openSudoku);
+      } else renderSudoku();
+    }
+
+    function spawnTile(board, random = Math.random) {
+      const empty = board.map((v,i) => v === 0 ? i : -1).filter(i => i >= 0); if (!empty.length) return board;
+      board[empty[Math.floor(random() * empty.length)]] = random() < .9 ? 2 : 4; return board;
+    }
+    function mergeLine(line) {
+      const values = line.filter(Boolean), out = [], result = { line: [], score: 0 };
+      for (let i = 0; i < values.length; i++) { if (values[i] === values[i+1]) { const v = values[i] * 2; out.push(v); result.score += v; i++; } else out.push(values[i]); }
+      result.line = [...out, ...Array(4 - out.length).fill(0)]; return result;
+    }
+    function move2048(board, direction) {
+      const next = [...board]; let gained = 0;
+      for (let line = 0; line < 4; line++) {
+        let ids = direction === 'left' ? [0,1,2,3].map(c=>line*4+c) : direction === 'right' ? [3,2,1,0].map(c=>line*4+c) : direction === 'up' ? [0,1,2,3].map(r=>r*4+line) : [3,2,1,0].map(r=>r*4+line);
+        const merged = mergeLine(ids.map(i => board[i])); gained += merged.score; ids.forEach((id,i) => next[id] = merged.line[i]);
+      }
+      return { board: next, score: gained, moved: next.some((v,i) => v !== board[i]) };
+    }
+    function has2048Moves(board) {
+      if (board.includes(0)) return true;
+      return ['left','right','up','down'].some(d => move2048(board,d).moved);
+    }
+    function open2048() {
+      const board = Array(16).fill(0); spawnTile(board); spawnTile(board);
+      state = { kind: '2048', board, score: 0, moves: 0, touch: null, timer: null }; prepareGeneric('2048'); render2048();
+    }
+    function render2048() {
+      document.getElementById('lives').textContent = `分数 ${state.score}`; document.getElementById('level').textContent = `移动 ${state.moves}`;
+      stage.innerHTML = `<div class="stage-inner"><h2>2048</h2><p class="muted">滑动棋盘或使用方向键</p><div class="tile-board" id="tileBoard">${state.board.map(v => `<div class="tile" data-value="${v}">${v || ''}</div>`).join('')}</div><div class="game-actions"><button class="btn btn-secondary" data-dir="left">←</button><button class="btn btn-secondary" data-dir="up">↑</button><button class="btn btn-secondary" data-dir="down">↓</button><button class="btn btn-secondary" data-dir="right">→</button></div></div>`;
+      stage.querySelector('.game-actions').addEventListener('click', e => { if (e.target.dataset.dir) play2048(e.target.dataset.dir); });
+      const board = document.getElementById('tileBoard');
+      board.addEventListener('pointerdown', e => state.touch = { x:e.clientX, y:e.clientY });
+      board.addEventListener('pointerup', e => { if (!state.touch) return; const dx=e.clientX-state.touch.x, dy=e.clientY-state.touch.y; if (Math.max(Math.abs(dx),Math.abs(dy)) > 24) play2048(Math.abs(dx)>Math.abs(dy) ? dx>0?'right':'left' : dy>0?'down':'up'); state.touch=null; });
+    }
+    function play2048(direction) {
+      const moved = move2048(state.board, direction); if (!moved.moved) return;
+      state.board = moved.board; state.score += moved.score; state.moves++; spawnTile(state.board);
+      if (!has2048Moves(state.board)) return completeGame('2048', '2048', Math.min(999, state.score / 2), [{ value: Math.max(...state.board), label: '最大方块' }, { value: state.score, label: '合并分' }, { value: state.moves, label: '移动' }], open2048);
+      render2048();
+    }
+
+    function shuffledSliding(size=4, random = Math.random) {
+      const board=[...Array(size*size-1)].map((_,i)=>i+1).concat(0),history=[];let empty=board.length-1,last=-1;const turns={3:45,4:120,5:220}[size];
+      for(let n=0;n<turns;n++){const r=Math.floor(empty/size),c=empty%size;let options=[];if(r)options.push(empty-size);if(r<size-1)options.push(empty+size);if(c)options.push(empty-1);if(c<size-1)options.push(empty+1);options=options.filter(i=>i!==last);const pick=options[Math.floor(random()*options.length)],tile=board[pick];[board[empty],board[pick]]=[board[pick],board[empty]];history.push(tile);last=empty;empty=pick;}
+      return {board,history};
+    }
+    function openSliding() {
+      state={kind:'slide-menu',timer:null};prepareGeneric('华容滑块');
+      stage.innerHTML=`<div class="stage-inner"><p class="eyebrow">从入门到进阶</p><h2>选择滑块难度</h2><p>所有棋盘都从完成状态经过合法移动洗牌，因此保证可解。</p><div class="choice-grid"><button class="choice" data-slide-size="3">3×3<br><small>新手入门</small></button><button class="choice" data-slide-size="4">4×4<br><small>经典挑战</small></button><button class="choice" data-slide-size="5">5×5<br><small>进阶挑战</small></button><button class="choice" id="slideTutorial">玩法教程</button></div></div>`;
+      stage.querySelector('.choice-grid').addEventListener('click',e=>{const b=e.target.closest('[data-slide-size]');if(b)startSliding(Number(b.dataset.slideSize));});document.getElementById('slideTutorial').addEventListener('click',showSlidingTutorial);
+    }
+    function showSlidingTutorial(){stage.innerHTML=`<div class="stage-inner"><p class="eyebrow">60 秒教程</p><h2>把数字送回顺序</h2><p>点击空格上、下、左、右相邻的数字，把它移入空格。目标是从左上到右下排列为 1、2、3…，最后留下空格。</p><div class="slide-board" style="grid-template-columns:repeat(3,1fr);max-width:280px"><button class="slide-tile">1</button><button class="slide-tile">2</button><button class="slide-tile">3</button><button class="slide-tile">4</button><button class="slide-tile">5</button><button class="slide-tile">6</button><button class="slide-tile">7</button><button class="slide-tile empty"></button><button class="slide-tile">8</button></div><p class="muted">这里点击 8，它就会进入空格，拼图完成。</p><button class="btn btn-primary" id="tutorialStart">开始 3×3</button></div>`;document.getElementById('tutorialStart').addEventListener('click',()=>startSliding(3));}
+    function startSliding(size){const mixed=shuffledSliding(size);state={kind:'slide',size,board:mixed.board,history:mixed.history,moves:0,hints:0,startedAt:Date.now(),timer:null};renderSliding();}
+    function renderSliding() {
+      document.getElementById('lives').textContent=`移动 ${state.moves}`;document.getElementById('level').textContent=`${state.size}×${state.size} · ${progress.xp} XP`;
+      stage.innerHTML = `<div class="stage-inner"><h2>华容滑块</h2><p class="muted">移动空格旁的数字，按顺序还原</p><div class="slide-board" style="grid-template-columns:repeat(${state.size},1fr)">${state.board.map((v,i)=>`<button class="slide-tile ${v===0?'empty':''}" data-slide="${i}" ${v===0?'disabled':''}>${v||''}</button>`).join('')}</div><div class="game-actions"><button class="btn btn-secondary" id="assistSlide">智能辅助一步 · 15 XP</button><button class="btn btn-secondary" id="reshuffle">换个难度</button></div></div>`;
+      stage.querySelector('.slide-board').addEventListener('click', e => { const i=e.target.dataset.slide; if(i!==undefined) moveSliding(Number(i),false); });document.getElementById('assistSlide').addEventListener('click',assistSliding);document.getElementById('reshuffle').addEventListener('click',openSliding);
+    }
+    function moveSliding(index,fromHint=false) {
+      const size=state.size,empty=state.board.indexOf(0),r=Math.floor(index/size),c=index%size,er=Math.floor(empty/size),ec=empty%size;if(Math.abs(r-er)+Math.abs(c-ec)!==1)return;
+      const tile=state.board[index];[state.board[index],state.board[empty]]=[state.board[empty],state.board[index]];state.moves++;
+      if(fromHint)state.history.pop();else if(state.history[state.history.length-1]===tile)state.history.pop();else state.history.push(tile);
+      if(state.board.every((v,i)=>v===(i===state.board.length-1?0:i+1))){const seconds=Math.round((Date.now()-state.startedAt)/1000);return completeGame('slide','华容滑块',Math.max(100,950-state.moves-seconds/2-state.hints*20),[{value:state.moves,label:'移动'},{value:`${seconds}s`,label:'用时'},{value:`${size}×${size}`,label:'棋盘'}],openSliding);}renderSliding();
+    }
+    function assistSliding(){if(progress.xp<15)return toast('积分不足，完成训练可以获得 XP');const tile=state.history[state.history.length-1];if(tile===undefined)return;const index=state.board.indexOf(tile);progress.xp-=15;state.hints++;saveProgress();moveSliding(index,true);}
+
+    const HUARONG_LEVELS=[
+      ['横刀立马',38],['指挥若定',48],['将拥曹营',58],['齐头并进',68],['兵分三路',78],['左右布兵',88],
+      ['桃花园中',98],['一路进军',112],['一夫当关',126],['层层设防',140],['水泄不通',156],['小燕出巢',176]
+    ];
+    function huarongSolvedPieces(){return [
+      {id:'cao',name:'曹操',portrait:'cao',w:2,h:2,x:1,y:3},{id:'guan',name:'关羽',portrait:'guan',w:2,h:1,x:1,y:2},
+      {id:'zhang',name:'张飞',portrait:'zhang',w:1,h:2,x:0,y:0},{id:'zhao',name:'赵云',portrait:'zhao',w:1,h:2,x:3,y:0},
+      {id:'huang',name:'黄忠',portrait:'huang',w:1,h:2,x:0,y:2},{id:'ma',name:'马超',portrait:'guard',w:1,h:2,x:3,y:2},
+      {id:'s1',name:'兵',portrait:'guard',w:1,h:1,x:1,y:0},{id:'s2',name:'兵',portrait:'guard',w:1,h:1,x:2,y:0},
+      {id:'s3',name:'兵',portrait:'guard',w:1,h:1,x:1,y:1},{id:'s4',name:'兵',portrait:'guard',w:1,h:1,x:2,y:1}
+    ];}
+    function seededRandom(seed){let n=seed>>>0;return()=>{n=(n*1664525+1013904223)>>>0;return n/4294967296;};}
+    function canMoveHuarong(pieces,id,dx,dy){const p=pieces.find(x=>x.id===id),nx=p.x+dx,ny=p.y+dy;if(nx<0||ny<0||nx+p.w>4||ny+p.h>5)return false;for(const other of pieces){if(other.id===id)continue;if(nx<other.x+other.w&&nx+p.w>other.x&&ny<other.y+other.h&&ny+p.h>other.y)return false;}return true;}
+    function huarongClassicPieces(){const pieces=huarongSolvedPieces(),set=(id,x,y)=>Object.assign(pieces.find(p=>p.id===id),{x,y});set('cao',1,0);set('guan',1,2);set('zhang',0,0);set('zhao',3,0);set('huang',0,2);set('ma',3,2);set('s1',1,3);set('s2',2,3);set('s3',0,4);set('s4',3,4);return pieces;}
+    function makeHuarongLevel(levelIndex){
+      const pieces=huarongClassicPieces(),random=seededRandom(7319+levelIndex*997),turns=levelIndex===0?0:HUARONG_LEVELS[levelIndex][1],history=[];let previous=null;
+      for(let n=0;n<turns;n++){let options=[];for(const p of pieces)for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(canMoveHuarong(pieces,p.id,dx,dy)&&!(p.id==='cao'&&p.x+dx===1&&p.y+dy===3))options.push({id:p.id,dx,dy});const filtered=options.filter(m=>!(previous&&previous.id===m.id&&previous.dx===-m.dx&&previous.dy===-m.dy));if(filtered.length)options=filtered;if(!options.length)break;const move=options[Math.floor(random()*options.length)],p=pieces.find(x=>x.id===move.id);p.x+=move.dx;p.y+=move.dy;history.push(move);previous=move;}
+      return {pieces,history};
+    }
+    function huarongStateKey(pieces){const pos=id=>{const p=pieces.find(x=>x.id===id);return`${p.x}${p.y}`;},vertical=pieces.filter(p=>p.w===1&&p.h===2).map(p=>`${p.x}${p.y}`).sort().join(''),soldiers=pieces.filter(p=>p.w===1&&p.h===1).map(p=>`${p.x}${p.y}`).sort().join('');return pos('cao')+pos('guan')+vertical+soldiers;}
+    function solveHuarongNextMove(start){const root=start.map(p=>({...p})),queue=[{pieces:root,first:null}],seen=new Set([huarongStateKey(root)]);let head=0;while(head<queue.length&&head<120000){const current=queue[head++],cao=current.pieces.find(p=>p.id==='cao');if(cao.x===1&&cao.y===3)return current.first;for(const p of current.pieces)for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(canMoveHuarong(current.pieces,p.id,dx,dy)){const next=current.pieces.map(x=>({...x})),m=next.find(x=>x.id===p.id);m.x+=dx;m.y+=dy;const key=huarongStateKey(next);if(!seen.has(key)){seen.add(key);queue.push({pieces:next,first:current.first||{id:p.id,dx,dy}});}}}return null;}
+    function openHuarong(){
+      state={kind:'huarong-menu',timer:null};prepareGeneric('华容道');document.getElementById('lives').textContent=`${progress.xp} XP`;document.getElementById('level').textContent='12 关';
+      stage.innerHTML=`<div class="stage-inner"><p class="eyebrow">三国经典益智</p><h2>华容道</h2><p>移动人物卡牌，让曹操从棋盘下方中央脱身。所有关卡都经过合法倒推，保证可解。</p><div class="huarong-levels">${HUARONG_LEVELS.map((l,i)=>`<button class="choice" data-hr-level="${i}"><b>${String(i+1).padStart(2,'0')} · ${l[0]}</b><br><small>${i<3?'入门':i<8?'进阶':'困难'}</small></button>`).join('')}</div><button class="btn btn-secondary" id="hrTutorial" style="margin-top:12px">查看玩法教程</button></div>`;
+      stage.querySelector('.huarong-levels').addEventListener('click',e=>{const b=e.target.closest('[data-hr-level]');if(b)startHuarong(Number(b.dataset.hrLevel));});document.getElementById('hrTutorial').addEventListener('click',showHuarongTutorial);
+    }
+    function showHuarongTutorial(){stage.innerHTML=`<div class="stage-inner"><p class="eyebrow">玩法教程</p><h2>先腾挪，再突围</h2><p>点击一张人物卡，再用方向键移动。卡牌不能重叠，也不能越过棋盘边界。曹操是 2×2 主将卡；当他到达底部中央出口，即可通关。</p><div class="game-actions"><span class="tag">竖将 1×2</span><span class="tag">横将 2×1</span><span class="tag">士兵 1×1</span><span class="tag">曹操 2×2</span></div><button class="btn btn-primary" id="hrTutorialStart" style="margin-top:30px">从第一关开始</button></div>`;document.getElementById('hrTutorialStart').addEventListener('click',()=>startHuarong(0));}
+    function startHuarong(levelIndex){const generated=makeHuarongLevel(levelIndex);state={kind:'huarong',levelIndex,pieces:generated.pieces,selected:'cao',moves:0,hints:0,startedAt:Date.now(),timer:null};renderHuarong();}
+    function renderHuarong(){
+      document.getElementById('lives').textContent=`移动 ${state.moves} · ${progress.xp} XP`;document.getElementById('level').textContent=HUARONG_LEVELS[state.levelIndex][0];
+      stage.innerHTML=`<div class="stage-inner"><h2>${HUARONG_LEVELS[state.levelIndex][0]}</h2><div class="huarong-board">${state.pieces.map(p=>`<button class="hr-piece portrait-${p.portrait} ${state.selected===p.id?'selected':''}" data-hr-piece="${p.id}" data-name="${p.name}" style="left:${p.x*25}%;top:${p.y*20}%;width:${p.w*25}%;height:${p.h*20}%" aria-label="${p.name}"></button>`).join('')}</div><div class="dpad"><span></span><button data-hr-dir="0,-1">↑</button><span></span><button data-hr-dir="-1,0">←</button><button data-hr-dir="0,1">↓</button><button data-hr-dir="1,0">→</button></div><div class="game-actions" style="margin-top:12px"><button class="btn btn-secondary" id="assistHuarong">智能辅助一步 · 25 XP</button><button class="btn btn-secondary" id="levelsHuarong">选择关卡</button></div></div>`;
+      stage.querySelector('.huarong-board').addEventListener('click',e=>{const p=e.target.closest('[data-hr-piece]');if(p){state.selected=p.dataset.hrPiece;renderHuarong();}});stage.querySelector('.dpad').addEventListener('click',e=>{if(e.target.dataset.hrDir){const [dx,dy]=e.target.dataset.hrDir.split(',').map(Number);moveHuarong(state.selected,dx,dy,false);}});document.getElementById('assistHuarong').addEventListener('click',assistHuarong);document.getElementById('levelsHuarong').addEventListener('click',openHuarong);
+    }
+    function moveHuarong(id,dx,dy,fromHint=false){if(!canMoveHuarong(state.pieces,id,dx,dy))return;const p=state.pieces.find(x=>x.id===id);p.x+=dx;p.y+=dy;state.moves++;
+      const cao=state.pieces.find(x=>x.id==='cao');if(cao.x===1&&cao.y===3){const seconds=Math.round((Date.now()-state.startedAt)/1000);return completeGame('huarong','华容道',Math.max(100,999-state.moves-state.hints*30-seconds/3),[{value:state.moves,label:'移动'},{value:`${seconds}s`,label:'用时'},{value:HUARONG_LEVELS[state.levelIndex][0],label:'关卡'}],()=>startHuarong(state.levelIndex));}renderHuarong();}
+    function assistHuarong(){if(progress.xp<25)return toast('积分不足，完成训练可以获得 XP');toast('正在分析当前局面…');setTimeout(()=>{const move=solveHuarongNextMove(state.pieces);if(!move)return toast('当前局面未找到可行路径');progress.xp-=25;state.hints++;saveProgress();state.selected=move.id;moveHuarong(move.id,move.dx,move.dy,true);},30);}
+
+    function mineNeighbors(index) { const r=Math.floor(index/9),c=index%9,out=[]; for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const nr=r+dr,nc=c+dc;if((dr||dc)&&nr>=0&&nr<9&&nc>=0&&nc<9)out.push(nr*9+nc);} return out; }
+    function plantMines(safe, random=Math.random) {
+      const mines=new Set(); while(mines.size<10){const i=Math.floor(random()*81);if(i!==safe&&!mineNeighbors(safe).includes(i))mines.add(i);} return [...Array(81)].map((_,i)=>({mine:mines.has(i),revealed:false,flagged:false,count:0})).map((cell,i,all)=>({...cell,count:mineNeighbors(i).filter(n=>all[n].mine).length}));
+    }
+    function openMines() { state={kind:'mine',cells:null,revealed:new Set(),flags:new Set(),flagMode:false,startedAt:Date.now(),timer:null};prepareGeneric('扫雷');renderMines(); }
+    function renderMines(message='首次点击保证安全') {
+      const cells=state.cells||Array.from({length:81},()=>({mine:false,revealed:false,flagged:false,count:0}));
+      document.getElementById('lives').textContent=`旗帜 ${state.flags.size} / 10`;document.getElementById('level').textContent='初级 9×9';
+      stage.innerHTML=`<div class="stage-inner"><h2>扫雷</h2><p class="muted">${message}</p><div class="mine-board">${cells.map((c,i)=>`<button class="mine-cell ${c.revealed?'revealed':''} ${c.flagged?'flagged':''}" data-mine="${i}">${c.flagged?'⚑':c.revealed?(c.mine?'×':c.count||''):''}</button>`).join('')}</div><div class="game-actions"><button class="btn ${state.flagMode?'btn-primary':'btn-secondary'}" id="flagMode">${state.flagMode?'标记模式已开':'标记模式'}</button><button class="btn btn-secondary" id="restartMine">新棋盘</button></div></div>`;
+      stage.querySelector('.mine-board').addEventListener('click',e=>{const i=e.target.dataset.mine;if(i!==undefined)state.flagMode?flagMine(Number(i)):revealMine(Number(i));});
+      stage.querySelector('.mine-board').addEventListener('contextmenu',e=>{e.preventDefault();const i=e.target.dataset.mine;if(i!==undefined)flagMine(Number(i));});
+      document.getElementById('flagMode').addEventListener('click',()=>{state.flagMode=!state.flagMode;renderMines();});document.getElementById('restartMine').addEventListener('click',openMines);
+    }
+    function flagMine(i){if(!state.cells||state.cells[i].revealed)return;state.cells[i].flagged=!state.cells[i].flagged;state.cells[i].flagged?state.flags.add(i):state.flags.delete(i);renderMines();}
+    function revealMine(i){if(!state.cells)state.cells=plantMines(i);const cell=state.cells[i];if(cell.flagged||cell.revealed)return;if(cell.mine){cell.revealed=true;state.cells.forEach(c=>{if(c.mine)c.revealed=true;});renderMines('踩到地雷，挑战结束');return state.timer=setTimeout(()=>completeGame('mine','扫雷',Math.max(50,state.revealed.size*8),[{value:state.revealed.size,label:'安全格'},{value:state.flags.size,label:'旗帜'},{value:'未完成',label:'结果'}],openMines),900);}const queue=[i];while(queue.length){const n=queue.pop(),c=state.cells[n];if(c.revealed||c.flagged)continue;c.revealed=true;state.revealed.add(n);if(c.count===0)mineNeighbors(n).forEach(x=>{if(!state.cells[x].revealed&&!state.cells[x].mine)queue.push(x);});}if(state.revealed.size===71){const seconds=Math.round((Date.now()-state.startedAt)/1000);return completeGame('mine','扫雷',Math.max(100,999-seconds),[{value:'胜利',label:'结果'},{value:`${seconds}s`,label:'用时'},{value:state.flags.size,label:'旗帜'}],openMines);}renderMines();}
+    function closeGame() { clearTimeout(state?.timer); gameScreen.classList.remove('open'); document.body.style.overflow = ''; }
+    document.getElementById('closeGame').addEventListener('click', closeGame);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && gameScreen.classList.contains('open')) closeGame(); });
+    document.addEventListener('keydown', e => { if (state?.kind !== '2048') return; const directions={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'};if(directions[e.key]){e.preventDefault();play2048(directions[e.key]);} });
+
+    window.MindPeakTests = {
+      run() {
+        const checks = [];
+        const assert = (name, condition) => { if (!condition) throw new Error(name); checks.push(name); };
+        assert('sequence length', makeSequence(8, () => .2).length === 8);
+        assert('no leading zero', makeSequence(6, () => 0)[0] !== '0');
+        assert('wrong answer scores zero', calculateRoundScore(5, 1000, false) === 0);
+        assert('higher difficulty scores more', calculateRoundScore(6, 1000, true) > calculateRoundScore(3, 1000, true));
+        assert('malformed storage fallback', loadProgress('{broken').version === 1);
+        assert('progress merge', loadProgress('{"streak":7}').streak === 7);
+        const colorTrial = makeColorTrial(() => .1);
+        assert('color trial in range', colorTrial.word >= 0 && colorTrial.ink < COLORS.length);
+        const mathTrial = makeMathTrial(10, () => .2);
+        assert('math truth metadata', mathTrial.isTrue ? mathTrial.shown === mathTrial.actual : mathTrial.shown !== mathTrial.actual);
+        const path = makePath(4, 6, () => .2);
+        assert('path length', path.length === 6);
+        assert('path unique', new Set(path.map(p => `${p.r}-${p.c}`)).size === path.length);
+        assert('2048 merges once', mergeLine([2,2,2,2]).line.join(',') === '4,4,0,0');
+        assert('2048 score', mergeLine([4,4,0,0]).score === 8);
+        const slide = shuffledSliding(4);
+        assert('sliding puzzle keeps all tiles', [...slide.board].sort((a,b)=>a-b).join(',') === [...Array(16)].map((_,i)=>i).join(','));
+        assert('sliding solver path available', slide.history.length > 0);
+        const sudoku = generateSudoku('medium');
+        assert('generated sudoku has unique solution', solveSudoku([...sudoku.puzzle],2).count === 1);
+        assert('generated sudoku solution valid', solveSudoku([...sudoku.puzzle],1).solution.join('') === sudoku.solution.join(''));
+        const mineCells = plantMines(40);
+        assert('mines count', mineCells.filter(c=>c.mine).length === 10);
+        assert('first mine click safe', !mineCells[40].mine && mineNeighbors(40).every(i=>!mineCells[i].mine));
+        console.table(checks.map(name => ({ test: name, result: 'PASS' }))); return `${checks.length} tests passed`;
+      }
+    };
+    renderProgress();
+  </script>
+</body>
+</html>
