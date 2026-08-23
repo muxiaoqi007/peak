@@ -169,8 +169,12 @@
     .race-rank { font: 18px var(--font-mono); color: var(--muted); }.race-controls { display: flex; gap: 4px; }.race-controls button { width: 34px; height: 34px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); }
     .clue-list { display: grid; gap: 6px; padding: 14px; margin: 16px 0; border-radius: 14px; background: var(--fg-soft); text-align: left; }
     .clue-list p { margin: 0; font-size: 14px; }
-    .castle-playfield { padding: 18px; border-radius: 22px; background: color-mix(in oklch,var(--game-green) 80%,var(--fg)); }
-    .castle-board { display: grid; gap: 5px; width: min(100%,430px); margin: 8px auto; }
+    .castle-stage { overflow: hidden; padding: 6px 4px 10px; scrollbar-gutter: auto; }
+    .castle-stage .stage-inner { height: 100%; display: grid; grid-template-rows: auto auto minmax(0,1fr) auto minmax(92px,18dvh); gap: clamp(5px,1dvh,10px); }
+    .castle-stage .stage-inner h2 { margin: 0; font-size: clamp(24px,4.5dvh,38px); line-height: 1.05; }
+    .castle-stage .stage-inner > p { margin: 0; font-size: clamp(12px,2dvh,15px); line-height: 1.3; }
+    .castle-playfield { min-height: 0; container-type: size; display: grid; place-items: center; padding: clamp(7px,1.5dvh,14px); border-radius: 18px; background: color-mix(in oklch,var(--game-green) 80%,var(--fg)); }
+    .castle-board { display: grid; grid-template-rows: repeat(var(--castle-height),1fr); gap: clamp(2px,.6dvh,5px); width: min(100cqw,calc(100cqh * var(--castle-ratio))); margin: 0 auto; }
     .castle-cell { aspect-ratio: 1; min-width: 0; padding: 0; border: 1px solid color-mix(in oklch,var(--surface) 24%,transparent); border-radius: 5px; background: color-mix(in oklch,var(--fg) 70%,var(--accent)); cursor: pointer; }
     .castle-cell.filled { border-color: color-mix(in oklch,var(--surface) 70%,transparent); }
     .terrain-0 { background: repeating-linear-gradient(0deg,color-mix(in oklch,var(--game-green) 78%,var(--surface)) 0 5px,var(--game-green) 5px 8px); }
@@ -178,12 +182,13 @@
     .terrain-2 { background: repeating-linear-gradient(45deg,color-mix(in oklch,var(--game-blue) 65%,var(--surface)) 0 7px,var(--game-blue) 7px 10px); }
     .terrain-3 { background: repeating-linear-gradient(90deg,color-mix(in oklch,var(--fg) 30%,var(--bg)) 0 6px,color-mix(in oklch,var(--fg) 45%,var(--surface)) 6px 9px); }
     .terrain-4 { background: repeating-linear-gradient(0deg,color-mix(in oklch,var(--game-green) 58%,var(--bg)) 0 6px,color-mix(in oklch,var(--game-green) 82%,var(--surface)) 6px 9px); }
-    .piece-water { min-height: 210px; margin-top: 14px; padding: 18px 10px; border-radius: 20px; background: color-mix(in oklch,var(--game-blue) 82%,var(--fg)); }
-    .piece-tray { display: flex; gap: 18px; align-items: center; justify-content: space-around; flex-wrap: wrap; }
-    .piece-map { display: grid; gap: 2px; padding: 8px; border: 2px solid transparent; border-radius: 10px; background: transparent; cursor: grab; touch-action: none; }
+    .piece-water { min-height: 0; margin: 0; padding: clamp(5px,1dvh,10px); border-radius: 16px; background: color-mix(in oklch,var(--game-blue) 82%,var(--fg)); overflow: hidden; }
+    .piece-tray { height: 100%; display: flex; gap: clamp(4px,1.2dvh,12px); align-items: center; align-content: center; justify-content: space-around; flex-wrap: wrap; }
+    .piece-map { display: grid; gap: 1px; padding: 4px; border: 2px solid transparent; border-radius: 8px; background: transparent; cursor: grab; touch-action: none; }
     .piece-map.selected { border-color: var(--surface); background: color-mix(in oklch,var(--surface) 12%,transparent); }.piece-map.placed { display: none; }
-    .piece-map span { width: 22px; height: 22px; border-radius: 3px; }.piece-map span.empty { visibility: hidden; }
-    .castle-toolbar { position: sticky; bottom: 0; z-index: 8; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 14px 0; padding: 10px; border: 1px solid var(--border); border-radius: 14px; background: color-mix(in srgb, var(--surface) 94%, transparent); box-shadow: 0 -8px 24px rgba(31, 38, 33, .12); backdrop-filter: blur(12px); }
+    .piece-map span { width: clamp(14px,2.25dvh,20px); height: clamp(14px,2.25dvh,20px); border-radius: 3px; }.piece-map span.empty { visibility: hidden; }
+    .castle-toolbar { z-index: 8; display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; margin: 0; padding: 5px; border: 1px solid var(--border); border-radius: 13px; background: var(--surface); }
+    .castle-toolbar .btn { padding: clamp(7px,1.2dvh,10px) 9px; font-size: clamp(11px,1.8dvh,13px); line-height: 1.1; white-space: nowrap; }
     .result-score { font: 90px/1 var(--font-display); margin: 30px 0 8px; }
     .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 28px 0; }
     .result-grid div { padding: 14px 8px; border-top: 1px solid var(--border); }
@@ -346,7 +351,7 @@
       document.getElementById('level').textContent = `等级 ${state.level}`;
     }
     function openNumberGame() {
-      state = initialState(); gameScreen.classList.add('open'); document.body.style.overflow = 'hidden'; syncGameMeta();
+      state = initialState(); stage.className = 'game-stage'; gameScreen.classList.add('open'); document.body.style.overflow = 'hidden'; syncGameMeta();
       stage.innerHTML = `<div class="stage-inner"><p class="eyebrow">记忆训练</p><h2>数字闪忆</h2><p>数字只会出现片刻。记住顺序，然后准确输入。</p><div style="margin-top:36px"><button class="btn btn-primary" id="beginRound">我准备好了</button></div></div>`;
       document.getElementById('beginRound').addEventListener('click', showSequence);
     }
@@ -387,6 +392,7 @@
       { name: '绿色', className: 'ink-green' }, { name: '黑色', className: 'ink-black' }
     ];
     function completeGame(id, title, score, stats, replay) {
+      stage.className = 'game-stage';
       const finalScore = Math.max(0, Math.min(999, Math.round(score)));
       const isBest = finalScore > (progress.best[id] || 0);
       progress.best[id] = Math.max(finalScore, progress.best[id] || 0);
@@ -397,6 +403,7 @@
       document.getElementById('finishGeneric').addEventListener('click', closeGame);
     }
     function prepareGeneric(title) {
+      stage.className = 'game-stage';
       gameScreen.classList.add('open'); document.body.style.overflow = 'hidden';
       document.getElementById('lives').textContent = title; document.getElementById('level').textContent = '准备';
     }
@@ -722,7 +729,7 @@
     function startCastlePuzzle(difficulty){startCastleRound(difficulty,1,Date.now(),0,0);}
     function startCastleRound(difficulty,round,sessionStarted,totalMoves,hints){document.getElementById('lives').textContent='正在生成唯一解…';const puzzle=generateCastlePuzzle(difficulty);state={kind:'castle',...puzzle,round,sessionStarted,totalMoves,hints,selected:0,dragging:null,placed:new Map(),moves:0,timer:null};renderCastlePuzzle();}
     function castlePieceMarkup(piece,id){const width=Math.max(...piece.map(c=>c[0]))+1,height=Math.max(...piece.map(c=>c[1]))+1,cells=new Set(piece.map(c=>c.join(',')));return `<div class="piece-map ${state.selected===id?'selected':''} ${state.placed.has(id)?'placed':''}" data-piece="${id}" style="grid-template-columns:repeat(${width},22px)" role="button" aria-label="地图拼块 ${id+1}">${[...Array(width*height)].map((_,i)=>`<span class="${cells.has(`${i%width},${Math.floor(i/width)}`)?`terrain-${id%5}`:'empty'}"></span>`).join('')}</div>`;}
-    function renderCastlePuzzle(message='拖动下方地图拼块到网格'){const filled=new Map();for(const [id,p] of state.placed)for(const cell of p.cells)filled.set(cell,id);const incorrect=castleIncorrectPieces(),autoCost=Math.max(80,incorrect.length*35);document.getElementById('lives').textContent=`${state.round}/3 · 已放 ${state.placed.size}/${state.pieces.length}`;document.getElementById('level').textContent=`${state.width}×${state.height}`;stage.innerHTML=`<div class="stage-inner"><h2>城堡拼图</h2><p class="muted">${message}</p><div class="castle-playfield"><div class="castle-board" style="grid-template-columns:repeat(${state.width},1fr)">${state.mask.map(cell=>`<button class="castle-cell ${filled.has(cell)?`filled terrain-${filled.get(cell)%5}`:''}" data-castle-cell="${cell}" aria-label="网格 ${cell+1}"></button>`).join('')}</div></div><div class="castle-toolbar"><button class="btn btn-secondary" id="hintCastle">AI 智能一步 · 40 XP</button><button class="btn btn-secondary" id="solveCastleRound">AI 完成本轮 · ${autoCost} XP</button><button class="btn btn-secondary" id="newCastle">换一题</button><button class="btn btn-secondary" id="closeCastle">返回主页</button></div><div class="piece-water"><div class="piece-tray">${state.pieces.map(castlePieceMarkup).join('')}</div></div></div>`;
+    function renderCastlePuzzle(message='拖动下方地图拼块到网格'){stage.className='game-stage castle-stage';const filled=new Map();for(const [id,p] of state.placed)for(const cell of p.cells)filled.set(cell,id);const incorrect=castleIncorrectPieces(),autoCost=Math.max(80,incorrect.length*35);document.getElementById('lives').textContent=`${state.round}/3 · 已放 ${state.placed.size}/${state.pieces.length}`;document.getElementById('level').textContent=`${state.width}×${state.height}`;stage.innerHTML=`<div class="stage-inner"><h2>城堡拼图</h2><p class="muted">${message}</p><div class="castle-playfield"><div class="castle-board" style="--castle-height:${state.height};--castle-ratio:${state.width/state.height};grid-template-columns:repeat(${state.width},1fr)">${state.mask.map(cell=>`<button class="castle-cell ${filled.has(cell)?`filled terrain-${filled.get(cell)%5}`:''}" data-castle-cell="${cell}" aria-label="网格 ${cell+1}"></button>`).join('')}</div></div><div class="castle-toolbar"><button class="btn btn-secondary" id="hintCastle">AI 智能一步 · 40 XP</button><button class="btn btn-secondary" id="solveCastleRound">AI 完成本轮 · ${autoCost} XP</button><button class="btn btn-secondary" id="newCastle">换一题</button><button class="btn btn-secondary" id="closeCastle">返回主页</button></div><div class="piece-water"><div class="piece-tray">${state.pieces.map(castlePieceMarkup).join('')}</div></div></div>`;
       const tray=stage.querySelector('.piece-tray'),board=stage.querySelector('.castle-board');tray.addEventListener('pointerdown',e=>{const piece=e.target.closest('[data-piece]');if(!piece)return;state.selected=Number(piece.dataset.piece);state.dragging=state.selected;tray.querySelectorAll('.piece-map').forEach(p=>p.classList.toggle('selected',Number(p.dataset.piece)===state.selected));});tray.addEventListener('click',e=>{const piece=e.target.closest('[data-piece]');if(piece)state.selected=Number(piece.dataset.piece);});board.addEventListener('pointerup',e=>{if(state.dragging===null)return;const cell=(e.target.closest('[data-castle-cell]')||document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-castle-cell]'));state.dragging=null;if(cell){state.suppressCastleClick=true;placeCastlePiece(Number(cell.dataset.castleCell));setTimeout(()=>state.suppressCastleClick=false,0);}});board.addEventListener('click',e=>{if(state.suppressCastleClick)return;const cell=e.target.closest('[data-castle-cell]');if(!cell)return;const index=Number(cell.dataset.castleCell);if(filled.has(index)){state.placed.delete(filled.get(index));return renderCastlePuzzle('已将拼块放回水面');}placeCastlePiece(index);});document.getElementById('hintCastle').addEventListener('click',hintCastlePuzzle);document.getElementById('solveCastleRound').addEventListener('click',solveCastleRoundWithAI);document.getElementById('newCastle').addEventListener('click',()=>startCastleRound(state.difficulty,state.round,state.sessionStarted,state.totalMoves,state.hints));document.getElementById('closeCastle').addEventListener('click',closeGame);}
     function placeCastlePiece(targetCell){const id=state.selected;if(state.placed.has(id))return;const occupied=new Set([...state.placed.values()].flatMap(p=>p.cells)),candidates=castlePlacements(state.width,state.height,state.mask,state.pieces).filter(p=>p.pieceId===id&&p.cells.every(c=>!occupied.has(c))),containing=candidates.filter(p=>p.cells.includes(targetCell)),placement=(containing.length?containing:candidates).sort((a,b)=>Math.abs(a.x-targetCell%state.width)+Math.abs(a.y-Math.floor(targetCell/state.width))-Math.abs(b.x-targetCell%state.width)-Math.abs(b.y-Math.floor(targetCell/state.width)))[0];if(!placement)return renderCastlePuzzle('剩余空间放不下这块地图');state.placed.set(id,{cells:[...placement.cells]});state.moves++;state.totalMoves++;if(state.placed.size===state.pieces.length)return finishCastleRound();state.selected=state.pieces.findIndex((_,i)=>!state.placed.has(i));renderCastlePuzzle();}
     function finishCastleRound(){if(state.round<3){const {difficulty,round,sessionStarted,totalMoves,hints}=state;toast(`第 ${round} 轮完成`);return state.timer=setTimeout(()=>startCastleRound(difficulty,round+1,sessionStarted,totalMoves,hints),650);}const seconds=Math.round((Date.now()-state.sessionStarted)/1000);completeGame('castle','城堡拼图',Math.max(100,2997-state.totalMoves*8-state.hints*50-seconds*2)/3,[{value:'3/3',label:'完成轮次'},{value:state.totalMoves,label:'摆放'},{value:`${seconds}s`,label:'总用时'}],()=>startCastlePuzzle(state.difficulty));}
@@ -746,7 +753,7 @@
     }
     function flagMine(i){if(!state.cells||state.cells[i].revealed)return;state.cells[i].flagged=!state.cells[i].flagged;state.cells[i].flagged?state.flags.add(i):state.flags.delete(i);renderMines();}
     function revealMine(i){if(!state.cells)state.cells=plantMines(i);const cell=state.cells[i];if(cell.flagged||cell.revealed)return;if(cell.mine){cell.revealed=true;state.cells.forEach(c=>{if(c.mine)c.revealed=true;});renderMines('踩到地雷，挑战结束');return state.timer=setTimeout(()=>completeGame('mine','扫雷',Math.max(50,state.revealed.size*8),[{value:state.revealed.size,label:'安全格'},{value:state.flags.size,label:'旗帜'},{value:'未完成',label:'结果'}],openMines),900);}const queue=[i];while(queue.length){const n=queue.pop(),c=state.cells[n];if(c.revealed||c.flagged)continue;c.revealed=true;state.revealed.add(n);if(c.count===0)mineNeighbors(n).forEach(x=>{if(!state.cells[x].revealed&&!state.cells[x].mine)queue.push(x);});}if(state.revealed.size===71){const seconds=Math.round((Date.now()-state.startedAt)/1000);return completeGame('mine','扫雷',Math.max(100,999-seconds),[{value:'胜利',label:'结果'},{value:`${seconds}s`,label:'用时'},{value:state.flags.size,label:'旗帜'}],openMines);}renderMines();}
-    function closeGame() { clearTimeout(state?.timer); gameScreen.classList.remove('open'); document.body.style.overflow = ''; }
+    function closeGame() { clearTimeout(state?.timer); stage.className = 'game-stage'; gameScreen.classList.remove('open'); document.body.style.overflow = ''; }
     document.getElementById('closeGame').addEventListener('click', closeGame);
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && gameScreen.classList.contains('open')) closeGame(); });
     document.addEventListener('keydown', e => { if (state?.kind !== '2048') return; const directions={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'};if(directions[e.key]){e.preventDefault();play2048(directions[e.key]);} });
