@@ -151,6 +151,18 @@
     .profile-stat { padding: 20px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
     .profile-stat strong { display: block; font: 28px var(--font-mono); }
     .profile-stat span { color: var(--muted); font-size: 13px; }
+    .memory-board { width: min(100%,430px); display: grid; grid-template-columns: repeat(4,1fr); gap: 9px; margin: 26px auto; }
+    .memory-card { aspect-ratio: 1; border: 1px solid var(--fg); border-radius: 13px; background: var(--fg); color: transparent; font: 700 clamp(20px,7vw,34px) var(--font-display); cursor: pointer; transition: transform .18s ease, background .18s ease; }
+    .memory-card.open, .memory-card.matched { background: var(--surface); color: var(--fg); transform: rotateY(180deg); }
+    .memory-card.matched { border-color: var(--accent); color: var(--accent); }
+    .hanoi { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; height: 300px; align-items: end; margin: 24px auto; }
+    .hanoi-rod { position: relative; height: 100%; display: flex; flex-direction: column-reverse; align-items: center; justify-content: flex-start; gap: 5px; padding: 0 5px 12px; border: 0; border-bottom: 8px solid var(--fg); background: transparent; cursor: pointer; }
+    .hanoi-rod::before { content: ''; position: absolute; z-index: -1; left: calc(50% - 4px); bottom: 10px; width: 8px; height: 85%; border-radius: 8px 8px 0 0; background: var(--border); }
+    .hanoi-rod.selected::before { background: var(--accent); }
+    .disk { height: 26px; border: 2px solid var(--surface); border-radius: 8px; background: var(--fg); color: var(--surface); font: 11px/22px var(--font-mono); }
+    .stroke-board { width: min(100%,430px); aspect-ratio: 1; margin: 22px auto; border: 1px solid var(--border); border-radius: 20px; background: var(--bg); touch-action: manipulation; }
+    .stroke-edge { stroke: var(--border); stroke-width: 7; stroke-linecap: round; }.stroke-edge.used { stroke: var(--accent); }
+    .stroke-node { fill: var(--surface); stroke: var(--fg); stroke-width: 4; cursor: pointer; }.stroke-node.current { fill: var(--accent); stroke: var(--accent); }
     .result-score { font: 90px/1 var(--font-display); margin: 30px 0 8px; }
     .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 28px 0; }
     .result-grid div { padding: 14px 8px; border-top: 1px solid var(--border); }
@@ -196,7 +208,7 @@
       </section>
 
       <section class="section" data-od-id="game-library">
-        <div class="section-head row-between"><div><h2>全部游戏</h2><p>认知训练与传统益智，各有各的乐趣。</p></div><span class="muted">9 款</span></div>
+        <div class="section-head row-between"><div><h2>全部游戏</h2><p>认知训练与传统益智，各有各的乐趣。</p></div><span class="muted">12 款</span></div>
         <div class="games" id="games"></div>
       </section>
     </main>
@@ -241,7 +253,10 @@
       { id: '2048', icon: '2ⁿ', title: '2048', desc: '合并相同数字，规划每一步的空间。', type: '经典益智', ready: true },
       { id: 'slide', icon: '▦', title: '华容滑块', desc: '移动方块，以更少步数还原目标。', type: '经典益智', ready: true },
       { id: 'huarong', icon: '将', title: '华容道', desc: '调兵遣将，为曹操打开华容道出口。', type: '经典益智', ready: true },
-      { id: 'mine', icon: '·×', title: '扫雷', desc: '根据数字线索，找出所有隐藏雷区。', type: '经典益智', ready: true }
+      { id: 'mine', icon: '·×', title: '扫雷', desc: '根据数字线索，找出所有隐藏雷区。', type: '经典益智', ready: true },
+      { id: 'memory', icon: '□?', title: '记忆翻牌', desc: '翻开并配对所有图案，尽量减少尝试。', type: '记忆训练', ready: true },
+      { id: 'hanoi', icon: '△', title: '汉诺塔', desc: '遵守小盘在上的规则，完成整塔迁移。', type: '经典益智', ready: true },
+      { id: 'stroke', icon: '⌁', title: '一笔画', desc: '每条线只能经过一次，画完整个图形。', type: '推理训练', ready: true }
     ];
     const STORAGE_KEY = 'lizhi-progress-v1';
     const DEFAULT_PROGRESS = { version: 3, streak: 1, xp: 999999, sessions: 0, completedToday: 0, best: {}, history: [] };
@@ -285,7 +300,7 @@
     document.getElementById('resetProgress').addEventListener('click',()=>{if(!confirm('确定清除这台设备上的全部训练数据吗？'))return;progress={...DEFAULT_PROGRESS,best:{},history:[]};saveProgress();renderProgress();renderReports();toast('本地训练数据已重置');});
     gamesEl.addEventListener('click', e => {
       const card = e.target.closest('[data-game]'); if (!card) return;
-      const launchers = { number: openNumberGame, color: openColorGame, math: openMathGame, path: openPathGame, sudoku: openSudoku, '2048': open2048, slide: openSliding, huarong: openHuarong, mine: openMines };
+      const launchers = { number: openNumberGame, color: openColorGame, math: openMathGame, path: openPathGame, sudoku: openSudoku, '2048': open2048, slide: openSliding, huarong: openHuarong, mine: openMines, memory: openMemoryCards, hanoi: openHanoi, stroke: openOneStroke };
       launchers[card.dataset.game] ? launchers[card.dataset.game]() : toast('这款游戏已列入下一阶段');
     });
     document.getElementById('startWorkout').addEventListener('click', openNumberGame);
@@ -634,6 +649,29 @@
     function moveHuarong(id,dx,dy,fromHint=false){if(!canMoveHuarong(state.pieces,id,dx,dy))return;const p=state.pieces.find(x=>x.id===id);p.x+=dx;p.y+=dy;state.moves++;
       const cao=state.pieces.find(x=>x.id==='cao');if(cao.x===1&&cao.y===3){const seconds=Math.round((Date.now()-state.startedAt)/1000);return completeGame('huarong','华容道',Math.max(100,999-state.moves-state.hints*30-seconds/3),[{value:state.moves,label:'移动'},{value:`${seconds}s`,label:'用时'},{value:HUARONG_LEVELS[state.levelIndex][0],label:'关卡'}],()=>startHuarong(state.levelIndex));}renderHuarong();}
     function assistHuarong(){if(progress.xp<25)return toast('积分不足，完成训练可以获得 XP');toast('正在分析当前局面…');setTimeout(()=>{const move=solveHuarongNextMove(state.pieces);if(!move)return toast('当前局面未找到可行路径');progress.xp-=25;state.hints++;saveProgress();state.selected=move.id;moveHuarong(move.id,move.dx,move.dy,true);},30);}
+
+    function openMemoryCards(){
+      const symbols=shuffle(['山','川','月','风','云','竹','鹤','松'].flatMap(v=>[v,v]));state={kind:'memory',cards:symbols.map((value,i)=>({value,id:i,open:false,matched:false})),first:null,locked:false,moves:0,matched:0,startedAt:Date.now(),timer:null};prepareGeneric('记忆翻牌');renderMemoryCards();
+    }
+    function renderMemoryCards(){document.getElementById('lives').textContent=`配对 ${state.matched} / 8`;document.getElementById('level').textContent=`翻牌 ${state.moves}`;stage.innerHTML=`<div class="stage-inner"><h2>记忆翻牌</h2><p class="muted">记住图案位置，找出全部配对</p><div class="memory-board">${state.cards.map(c=>`<button class="memory-card ${c.open?'open':''} ${c.matched?'matched':''}" data-memory="${c.id}" ${c.matched?'disabled':''}>${c.value}</button>`).join('')}</div><button class="btn btn-secondary" id="restartMemory">重新洗牌</button></div>`;stage.querySelector('.memory-board').addEventListener('click',e=>{const card=e.target.closest('[data-memory]');if(card)flipMemory(Number(card.dataset.memory));});document.getElementById('restartMemory').addEventListener('click',openMemoryCards);}
+    function flipMemory(id){if(state.locked)return;const card=state.cards[id];if(card.open||card.matched)return;card.open=true;if(state.first===null){state.first=id;renderMemoryCards();return;}state.moves++;const first=state.cards[state.first];if(first.value===card.value){first.matched=card.matched=true;state.matched++;state.first=null;if(state.matched===8){const seconds=Math.round((Date.now()-state.startedAt)/1000);return completeGame('memory','记忆翻牌',Math.max(100,999-state.moves*22-seconds*2),[{value:state.moves,label:'尝试'},{value:`${seconds}s`,label:'用时'},{value:'8/8',label:'配对'}],openMemoryCards);}renderMemoryCards();}else{state.locked=true;renderMemoryCards();state.timer=setTimeout(()=>{first.open=card.open=false;state.first=null;state.locked=false;renderMemoryCards();},750);}}
+
+    function openHanoi(){state={kind:'hanoi-menu',timer:null};prepareGeneric('汉诺塔');stage.innerHTML=`<div class="stage-inner"><p class="eyebrow">递归思维</p><h2>选择圆盘数量</h2><p>把整座塔从左侧移到右侧，任何时候都不能把大盘放在小盘上。</p><div class="choice-grid">${[3,4,5,6].map(n=>`<button class="choice" data-hanoi="${n}">${n} 层<br><small>最少 ${2**n-1} 步</small></button>`).join('')}</div></div>`;stage.querySelector('.choice-grid').addEventListener('click',e=>{const b=e.target.closest('[data-hanoi]');if(b)startHanoi(Number(b.dataset.hanoi));});}
+    function startHanoi(disks){state={kind:'hanoi',disks,rods:[[...Array(disks)].map((_,i)=>disks-i),[],[]],selected:null,moves:0,startedAt:Date.now(),timer:null};renderHanoi();}
+    function renderHanoi(message='先点击要移动的塔柱'){document.getElementById('lives').textContent=`移动 ${state.moves}`;document.getElementById('level').textContent=`${state.disks} 层 · 最少 ${2**state.disks-1}`;stage.innerHTML=`<div class="stage-inner"><h2>汉诺塔</h2><p class="muted">${message}</p><div class="hanoi">${state.rods.map((rod,r)=>`<button class="hanoi-rod ${state.selected===r?'selected':''}" data-rod="${r}" aria-label="第 ${r+1} 根塔柱">${rod.map(d=>`<span class="disk" style="width:${28+d/state.disks*68}%">${d}</span>`).join('')}</button>`).join('')}</div><div class="game-actions"><button class="btn btn-secondary" id="restartHanoi">重新开始</button><button class="btn btn-secondary" id="levelHanoi">选择难度</button></div></div>`;stage.querySelector('.hanoi').addEventListener('click',e=>{const rod=e.target.closest('[data-rod]');if(rod)tapHanoi(Number(rod.dataset.rod));});document.getElementById('restartHanoi').addEventListener('click',()=>startHanoi(state.disks));document.getElementById('levelHanoi').addEventListener('click',openHanoi);}
+    function tapHanoi(rod){if(state.selected===null){if(!state.rods[rod].length)return;state.selected=rod;return renderHanoi('再点击目标塔柱');}if(state.selected===rod){state.selected=null;return renderHanoi();}const from=state.rods[state.selected],disk=from[from.length-1],target=state.rods[rod],top=target[target.length-1];if(top&&top<disk){state.selected=null;return renderHanoi('大盘不能放在小盘上');}from.pop();target.push(disk);state.selected=null;state.moves++;if(state.rods[2].length===state.disks){const seconds=Math.round((Date.now()-state.startedAt)/1000),optimal=2**state.disks-1;return completeGame('hanoi','汉诺塔',Math.max(100,999-(state.moves-optimal)*18-seconds),[{value:state.moves,label:'移动'},{value:optimal,label:'理论最少'},{value:`${state.disks} 层`,label:'难度'}],()=>startHanoi(state.disks));}renderHanoi();}
+
+    const STROKE_LEVELS=[
+      {name:'三角回环',nodes:[[50,14],[16,78],[84,78]],edges:[[0,1],[1,2],[2,0]]},
+      {name:'方中斜线',nodes:[[18,18],[82,18],[82,82],[18,82]],edges:[[0,1],[1,2],[2,3],[3,0],[0,2]]},
+      {name:'一座小屋',nodes:[[50,10],[18,42],[82,42],[18,86],[82,86]],edges:[[0,1],[0,2],[1,2],[1,3],[2,4],[3,4]]},
+      {name:'交叠双翼',nodes:[[15,20],[50,50],[85,20],[15,80],[85,80]],edges:[[0,1],[1,2],[2,4],[4,1],[1,3],[3,0]]},
+      {name:'五点星路',nodes:[[50,8],[88,78],[12,32],[88,32],[12,78]],edges:[[0,1],[1,2],[2,3],[3,4],[4,0]]}
+    ];
+    function openOneStroke(){state={kind:'stroke',level:0,totalMoves:0,timer:null,startedAt:Date.now()};startStrokeLevel();}
+    function startStrokeLevel(){state.current=null;state.used=new Set();prepareGeneric('一笔画');renderOneStroke();}
+    function renderOneStroke(message='点击任意起点开始'){const level=STROKE_LEVELS[state.level];document.getElementById('lives').textContent=`线段 ${state.used.size} / ${level.edges.length}`;document.getElementById('level').textContent=`${state.level+1} / ${STROKE_LEVELS.length}`;stage.innerHTML=`<div class="stage-inner"><h2>${level.name}</h2><p class="muted">${message}</p><svg class="stroke-board" viewBox="0 0 100 100" aria-label="一笔画图形">${level.edges.map((e,i)=>`<line class="stroke-edge ${state.used.has(i)?'used':''}" x1="${level.nodes[e[0]][0]}" y1="${level.nodes[e[0]][1]}" x2="${level.nodes[e[1]][0]}" y2="${level.nodes[e[1]][1]}"/>`).join('')}${level.nodes.map((n,i)=>`<circle class="stroke-node ${state.current===i?'current':''}" data-stroke-node="${i}" cx="${n[0]}" cy="${n[1]}" r="5"/>`).join('')}</svg><div class="game-actions"><button class="btn btn-secondary" id="resetStroke">重画本关</button></div></div>`;stage.querySelector('.stroke-board').addEventListener('click',e=>{const n=e.target.dataset.strokeNode;if(n!==undefined)tapStroke(Number(n));});document.getElementById('resetStroke').addEventListener('click',startStrokeLevel);}
+    function tapStroke(node){if(state.current===null){state.current=node;return renderOneStroke('沿着未使用的线继续');}const level=STROKE_LEVELS[state.level],edgeIndex=level.edges.findIndex((e,i)=>!state.used.has(i)&&((e[0]===state.current&&e[1]===node)||(e[1]===state.current&&e[0]===node)));if(edgeIndex<0)return renderOneStroke('这两个点之间没有可用线段');state.used.add(edgeIndex);state.current=node;state.totalMoves++;if(state.used.size===level.edges.length){state.level++;if(state.level===STROKE_LEVELS.length){const seconds=Math.round((Date.now()-state.startedAt)/1000);return completeGame('stroke','一笔画',Math.max(100,999-seconds*2),[{value:'5/5',label:'完成关卡'},{value:state.totalMoves,label:'经过线段'},{value:`${seconds}s`,label:'用时'}],openOneStroke);}return state.timer=setTimeout(startStrokeLevel,500);}renderOneStroke();}
 
     function mineNeighbors(index) { const r=Math.floor(index/9),c=index%9,out=[]; for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const nr=r+dr,nc=c+dc;if((dr||dc)&&nr>=0&&nr<9&&nc>=0&&nc<9)out.push(nr*9+nc);} return out; }
     function plantMines(safe, random=Math.random) {
