@@ -132,6 +132,25 @@
     .portrait-cao { background-position: 0 0; }.portrait-guan { background-position: 50% 0; }.portrait-zhang { background-position: 100% 0; }.portrait-zhao { background-position: 0 100%; }.portrait-huang { background-position: 50% 100%; }.portrait-guard { background-position: 100% 100%; }
     .dpad { display: grid; grid-template-columns: repeat(3,52px); justify-content: center; gap: 6px; }
     .dpad button { width: 52px; height: 46px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); cursor: pointer; }
+    .page-screen.hidden { display: none; }
+    .report-grid { display: grid; grid-template-columns: 1.3fr .7fr; gap: 16px; margin-top: 28px; }
+    .report-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+    .report-card > p { color: var(--muted); margin: 6px 0 22px; }
+    .trend-chart { height: 220px; display: flex; align-items: end; gap: 9px; padding-top: 20px; border-bottom: 1px solid var(--border); }
+    .trend-day { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: end; gap: 7px; height: 100%; }
+    .trend-bar { width: min(32px,72%); min-height: 3px; border-radius: 8px 8px 2px 2px; background: var(--accent); }
+    .trend-day small { color: var(--muted); font: 10px var(--font-mono); }
+    .best-list, .history-list { display: grid; gap: 0; }
+    .best-row, .history-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 13px 0; border-top: 1px solid var(--border); }
+    .best-row span, .history-row small { color: var(--muted); }
+    .best-row strong, .history-row strong { font-family: var(--font-mono); }
+    .empty-state { padding: 34px 0; color: var(--muted); text-align: center; }
+    .profile-hero { display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: center; padding: 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 24px; }
+    .avatar { width: 84px; height: 84px; display: grid; place-items: center; border-radius: 24px; background: var(--fg); color: var(--surface); font: 42px var(--font-display); }
+    .profile-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 18px; }
+    .profile-stat { padding: 20px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+    .profile-stat strong { display: block; font: 28px var(--font-mono); }
+    .profile-stat span { color: var(--muted); font-size: 13px; }
     .result-score { font: 90px/1 var(--font-display); margin: 30px 0 8px; }
     .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 28px 0; }
     .result-grid div { padding: 14px 8px; border-top: 1px solid var(--border); }
@@ -139,8 +158,8 @@
     .result-grid small { color: var(--muted); }
     .toast { position: fixed; z-index: 50; left: 50%; top: 24px; transform: translate(-50%, -120px); background: var(--fg); color: var(--surface); border-radius: 12px; padding: 11px 16px; transition: transform .25s ease; }
     .toast.show { transform: translate(-50%, 0); }
-    @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 44px; } .skill-grid, .games { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 560px) { .app { padding: 20px 16px 110px; } main { margin-top: 42px; } .streak span:last-child { display: none; } .skill-grid { grid-template-columns: 1fr 1fr; } .games { grid-template-columns: 1fr; } .game-card { min-height: 170px; } .game-shell { min-height: calc(100vh - 24px); border-radius: 22px; padding: 18px; } .game-screen { padding: 12px; } }
+    @media (max-width: 900px) { .hero-grid, .report-grid { grid-template-columns: 1fr; gap: 44px; } .skill-grid, .games { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .app { padding: 20px 16px 110px; } main { margin-top: 42px; } .streak span:last-child { display: none; } .skill-grid { grid-template-columns: 1fr 1fr; } .games { grid-template-columns: 1fr; } .game-card { min-height: 170px; } .game-shell { min-height: calc(100vh - 24px); border-radius: 22px; padding: 18px; } .game-screen { padding: 12px; } .profile-stats { grid-template-columns: 1fr; } .profile-hero { grid-template-columns: 1fr; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
   </style>
 </head>
@@ -183,7 +202,26 @@
     </main>
   </div>
 
-  <nav class="bottom-nav" aria-label="主导航"><button class="nav-btn active">训练</button><button class="nav-btn" data-soon="进度报告">进度</button><button class="nav-btn" data-soon="个人中心">我的</button></nav>
+  <div class="app page-screen hidden" id="progressPage">
+    <header class="topbar"><div class="brand"><span class="brand-mark">析</span><div><strong>训练进度</strong><small>看见每一次积累</small></div></div><span class="muted" id="reportSessions">0 次训练</span></header>
+    <main>
+      <section data-od-id="progress-overview"><p class="eyebrow">最近 7 天</p><h1>你的能力曲线。</h1><div class="report-grid">
+        <article class="report-card"><h3>每日训练得分</h3><p>同一天多次训练取平均值。</p><div class="trend-chart" id="trendChart"></div></article>
+        <article class="report-card"><h3>个人最佳</h3><p>所有游戏的历史最高得分。</p><div class="best-list" id="bestList"></div></article>
+      </div></section>
+      <section class="section" data-od-id="recent-history"><div class="section-head"><h2>最近训练</h2><p>最多保留最近 50 次训练记录。</p></div><div class="report-card history-list" id="historyList"></div></section>
+    </main>
+  </div>
+
+  <div class="app page-screen hidden" id="profilePage">
+    <header class="topbar"><div class="brand"><span class="brand-mark">我</span><div><strong>个人中心</strong><small>你的训练档案</small></div></div></header>
+    <main>
+      <section data-od-id="profile-overview"><div class="profile-hero"><div class="avatar">砺</div><div><p class="eyebrow">本地训练者</p><h2>每天锋利一点</h2><p class="muted">当前为无需登录的本地档案，成绩保存在这台设备中。</p></div></div><div class="profile-stats"><div class="profile-stat"><strong id="profileXp">0</strong><span>可用 XP</span></div><div class="profile-stat"><strong id="profileStreak">1</strong><span>连续训练天数</span></div><div class="profile-stat"><strong id="profileSessions">0</strong><span>累计训练次数</span></div></div></section>
+      <section class="section" data-od-id="profile-settings"><div class="section-head"><h2>数据与设置</h2><p>下一阶段将加入云端账号和跨设备同步。</p></div><div class="report-card"><div class="row-between"><div><h3>重置本地训练数据</h3><p class="muted">清除成绩、历史和连续训练记录。</p></div><button class="btn btn-secondary" id="resetProgress">重置</button></div></div></section>
+    </main>
+  </div>
+
+  <nav class="bottom-nav" aria-label="主导航"><button class="nav-btn active" data-tab="home">训练</button><button class="nav-btn" data-tab="progressPage">进度</button><button class="nav-btn" data-tab="profilePage">我的</button></nav>
   <div class="toast" id="toast" role="status"></div>
 
   <section class="game-screen" id="gameScreen" aria-modal="true" role="dialog" data-od-id="number-flash-game">
@@ -206,10 +244,10 @@
       { id: 'mine', icon: '·×', title: '扫雷', desc: '根据数字线索，找出所有隐藏雷区。', type: '经典益智', ready: true }
     ];
     const STORAGE_KEY = 'lizhi-progress-v1';
-    const DEFAULT_PROGRESS = { version: 2, streak: 1, xp: 999999, sessions: 0, completedToday: 0, best: {} };
+    const DEFAULT_PROGRESS = { version: 3, streak: 1, xp: 999999, sessions: 0, completedToday: 0, best: {}, history: [] };
     function loadProgress(raw = localStorage.getItem(STORAGE_KEY)) {
-      try { const data = raw ? JSON.parse(raw) : {}; const migrated = data.version === 1 ? { ...data, version: 2, xp: 999999 } : data; return { ...DEFAULT_PROGRESS, ...migrated, best: { ...DEFAULT_PROGRESS.best, ...(migrated.best || {}) } }; }
-      catch { return { ...DEFAULT_PROGRESS, best: {} }; }
+      try { const data = raw ? JSON.parse(raw) : {}; let migrated = data.version === 1 ? { ...data, version: 2, xp: 999999 } : data; if((migrated.version||0)<3)migrated={...migrated,version:3,history:migrated.history||[]}; return { ...DEFAULT_PROGRESS, ...migrated, best: { ...DEFAULT_PROGRESS.best, ...(migrated.best || {}) }, history: Array.isArray(migrated.history)?migrated.history:[] }; }
+      catch { return { ...DEFAULT_PROGRESS, best: {}, history: [] }; }
     }
     let progress = loadProgress();
     const saveProgress = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
@@ -224,12 +262,27 @@
       document.getElementById('focusScore').textContent = progress.best.color || '—';
       document.getElementById('agilityScore').textContent = progress.best.math || '—';
       document.getElementById('reasonScore').textContent = progress.best.path || '—';
+      document.getElementById('profileXp').textContent = progress.xp.toLocaleString('zh-CN');
+      document.getElementById('profileStreak').textContent = progress.streak;
+      document.getElementById('profileSessions').textContent = progress.sessions;
+      document.getElementById('reportSessions').textContent = `${progress.sessions} 次训练`;
+    }
+    function recordSession(game, score){progress.history=[{game,score:Math.round(score),at:new Date().toISOString()},...(progress.history||[])].slice(0,50);}
+    const gameNames=Object.fromEntries(GAMES.map(g=>[g.id,g.title]));
+    function renderReports(){
+      const days=[...Array(7)].map((_,i)=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-(6-i));return d;});
+      const values=days.map(day=>{const next=new Date(day);next.setDate(next.getDate()+1);const rows=progress.history.filter(h=>{const t=new Date(h.at);return t>=day&&t<next;});return rows.length?Math.round(rows.reduce((a,b)=>a+b.score,0)/rows.length):0;});
+      document.getElementById('trendChart').innerHTML=days.map((d,i)=>`<div class="trend-day"><div class="trend-bar" style="height:${Math.max(2,values[i]/10)}%" title="${values[i]} 分"></div><small>${d.getMonth()+1}/${d.getDate()}</small></div>`).join('');
+      const best=Object.entries(progress.best).filter(([,v])=>v).sort((a,b)=>b[1]-a[1]);
+      document.getElementById('bestList').innerHTML=best.length?best.map(([id,score])=>`<div class="best-row"><span>${gameNames[id]||id}</span><strong>${score}</strong></div>`).join(''):'<div class="empty-state">完成一局后显示成绩</div>';
+      document.getElementById('historyList').innerHTML=progress.history.length?progress.history.slice(0,12).map(h=>`<div class="history-row"><div><b>${gameNames[h.game]||h.game}</b><br><small>${new Date(h.at).toLocaleString('zh-CN',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}</small></div><strong>${h.score}</strong></div>`).join(''):'<div class="empty-state">还没有训练记录</div>';
     }
     function toast(message) {
       const el = document.getElementById('toast'); el.textContent = message; el.classList.add('show');
       clearTimeout(toast.timer); toast.timer = setTimeout(() => el.classList.remove('show'), 1800);
     }
-    document.querySelectorAll('[data-soon]').forEach(b => b.addEventListener('click', () => toast(`${b.dataset.soon}将在下一阶段开放`)));
+    document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('.app').forEach(page=>page.classList.toggle('hidden',page.id!==button.dataset.tab));document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b===button));if(button.dataset.tab==='progressPage')renderReports();renderProgress();window.scrollTo({top:0,behavior:'smooth'});}));
+    document.getElementById('resetProgress').addEventListener('click',()=>{if(!confirm('确定清除这台设备上的全部训练数据吗？'))return;progress={...DEFAULT_PROGRESS,best:{},history:[]};saveProgress();renderProgress();renderReports();toast('本地训练数据已重置');});
     gamesEl.addEventListener('click', e => {
       const card = e.target.closest('[data-game]'); if (!card) return;
       const launchers = { number: openNumberGame, color: openColorGame, math: openMathGame, path: openPathGame, sudoku: openSudoku, '2048': open2048, slide: openSliding, huarong: openHuarong, mine: openMines };
@@ -286,7 +339,7 @@
       const finalScore = Math.min(999, Math.round(state.score / Math.max(1, state.rounds)));
       const isBest = finalScore > (progress.best.number || 0);
       progress.best.number = Math.max(finalScore, progress.best.number || 0); progress.sessions++; progress.xp += state.correct * 10;
-      progress.completedToday = Math.min(4, progress.completedToday + 1); saveProgress(); renderProgress();
+      progress.completedToday = Math.min(4, progress.completedToday + 1); recordSession('number',finalScore); saveProgress(); renderProgress();
       stage.innerHTML = `<div class="stage-inner"><p class="eyebrow">训练完成</p><h2>${isBest ? '新的个人最佳' : '不错的练习'}</h2><div class="result-score">${finalScore}</div><p class="muted">记忆力得分</p><div class="result-grid"><div><strong>${accuracy}%</strong><small>准确率</small></div><div><strong>${state.correct}</strong><small>答对</small></div><div><strong>${state.level}</strong><small>最高等级</small></div></div><button class="btn btn-primary" id="replay">再练一次</button><button class="btn btn-secondary" id="finish" style="width:100%;margin-top:9px">返回首页</button></div>`;
       document.getElementById('replay').addEventListener('click', openNumberGame); document.getElementById('finish').addEventListener('click', closeGame);
     }
@@ -299,7 +352,7 @@
       const finalScore = Math.max(0, Math.min(999, Math.round(score)));
       const isBest = finalScore > (progress.best[id] || 0);
       progress.best[id] = Math.max(finalScore, progress.best[id] || 0);
-      progress.sessions++; progress.xp += Math.round(finalScore / 10); progress.completedToday = Math.min(4, progress.completedToday + 1);
+      progress.sessions++; progress.xp += Math.round(finalScore / 10); progress.completedToday = Math.min(4, progress.completedToday + 1); recordSession(id,finalScore);
       saveProgress(); renderProgress();
       stage.innerHTML = `<div class="stage-inner"><p class="eyebrow">训练完成</p><h2>${isBest ? '新的个人最佳' : title}</h2><div class="result-score">${finalScore}</div><p class="muted">${title}得分</p><div class="result-grid">${stats.map(s => `<div><strong>${s.value}</strong><small>${s.label}</small></div>`).join('')}</div><button class="btn btn-primary" id="replayGeneric">再练一次</button><button class="btn btn-secondary" id="finishGeneric" style="width:100%;margin-top:9px">返回首页</button></div>`;
       document.getElementById('replayGeneric').addEventListener('click', replay);
