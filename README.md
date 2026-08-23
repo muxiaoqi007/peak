@@ -32,12 +32,27 @@ python3 -m http.server 8080
 
 ## 技术说明
 
-- 单文件 HTML、CSS、JavaScript 应用
+- 无构建工具的模块化 HTML、CSS、JavaScript 应用
 - `localStorage` 保存个人最佳、积分和训练进度
 - 数独生成器会验证唯一解
 - 数织生成器支持棋盘尺寸与开局提示量双轴难度，并验证唯一解、避免近期关卡重复
 - 华容道使用状态压缩 BFS 提供实时辅助
 - 所有主要游戏支持触屏操作
+
+## 项目结构
+
+```text
+index.html              页面结构与脚本加载清单
+css/styles.css          全局及各游戏界面样式
+js/core.js              存档、报告、公共 UI 与共享工具
+js/bootstrap.js         导航、游戏入口和全局事件
+js/games/*.js           每款游戏一个独立文件
+js/tests.js             浏览器回归测试
+assets/                 图片素材
+docs/plans/             开发与重构计划
+```
+
+新增游戏时，在 `js/games/` 创建独立脚本，通过 `registerGame(id, launcher)` 注册入口，在 `GAMES` 清单登记卡片，并把脚本加入 `index.html`。不要把游戏逻辑重新写回页面文件。
 
 ## 素材
 
