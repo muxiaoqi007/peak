@@ -32,6 +32,7 @@ window.MindPeakTests = {
     assert('first mine click safe', !mineCells[40].mine && mineNeighbors(40).every(i=>!mineCells[i].mine));
     assert('nonogram run clues', nonogramClues([true,true,false,true,false]).join(',') === '2,1');
     assert('nonogram line patterns', nonogramLinePatterns(5,[2,1]).length === 3);
+    assert('nonogram defaults to empty board', DEFAULT_NONOGRAM_LEVEL === 'challenge' && NONOGRAM_LEVELS[DEFAULT_NONOGRAM_LEVEL].ratio === 0);
     let nonogramSample=null;for(let i=0;i<200&&!nonogramSample;i++){const solution=makeNonogramCandidate(8,seededRandom(90210+i)),clues=nonogramPuzzleFromSolution(solution,8),solved=solveNonogram(clues.rows,clues.cols,2);if(solved.count===1)nonogramSample={solution,clues,solved};}
     assert('nonogram deterministic sample generated', !!nonogramSample);
     assert('nonogram solver unique', nonogramSample.solved.count === 1);
