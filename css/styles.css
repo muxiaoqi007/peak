@@ -247,6 +247,31 @@ p { text-wrap: pretty; }
 .lights-demo { width: min(100%,250px); display: grid; grid-template-columns: repeat(3,1fr); gap: 5px; margin: 24px auto; }
 .lights-demo > * { aspect-ratio: 1; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 10px; background: var(--fg-soft); font-size: 22px; }
 .lights-demo b { background: var(--accent-soft); color: var(--accent); }
+.kakuro-stage { overflow: hidden; padding: 6px 4px 9px; scrollbar-gutter: auto; }
+.kakuro-stage .stage-inner { height: 100%; display: grid; grid-template-rows: auto auto minmax(0,1fr) auto auto; gap: clamp(4px,.8dvh,8px); align-items: center; }
+.kakuro-stage h2 { margin: 0; font-size: clamp(23px,3.8dvh,34px); line-height: 1.05; }
+.kakuro-stage .stage-inner > p { min-height: 1.25em; margin: 0; font-size: clamp(10px,1.65dvh,13px); line-height: 1.25; }
+.kakuro-board { display: grid; grid-template-columns: repeat(var(--kakuro-size),1fr); width: min(100%,51dvh,440px); aspect-ratio: 1; margin: auto; border: 2px solid var(--fg); border-radius: 12px; overflow: hidden; background: var(--fg); touch-action: manipulation; user-select: none; }
+.kakuro-clue, .kakuro-cell { position: relative; min-width: 0; padding: 0; border: 0; border-right: 1px solid color-mix(in oklch,var(--fg) 38%,var(--border)); border-bottom: 1px solid color-mix(in oklch,var(--fg) 38%,var(--border)); }
+.kakuro-clue { background: var(--fg); color: var(--surface); font: 700 clamp(7px,1.32dvh,11px)/1 var(--font-mono); }
+.kakuro-clue.has-clue::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top right,transparent 49%,color-mix(in oklch,var(--surface) 48%,transparent) 49.5%,color-mix(in oklch,var(--surface) 48%,transparent) 50.5%,transparent 51%); pointer-events: none; }
+.kakuro-clue span { position: absolute; z-index: 1; white-space: nowrap; }
+.kakuro-clue .down { top: 12%; right: 8%; }
+.kakuro-clue .across { left: 7%; bottom: 10%; }
+.kakuro-cell { display: grid; place-items: center; background: color-mix(in oklch,var(--game-blue) 7%,var(--surface)); color: var(--fg); font: 700 clamp(13px,3.1dvh,22px) var(--font-mono); cursor: pointer; }
+.kakuro-cell.given { background: color-mix(in oklch,var(--fg) 10%,var(--surface)); color: var(--accent); cursor: default; }
+.kakuro-cell.selected { z-index: 2; background: color-mix(in oklch,var(--accent) 15%,var(--surface)); box-shadow: inset 0 0 0 3px var(--accent); }
+.kakuro-notes { position: absolute; inset: 4%; display: grid; grid-template-columns: repeat(3,1fr); grid-template-rows: repeat(3,1fr); }
+.kakuro-notes i { display: grid; place-items: center; color: var(--muted); font: normal clamp(6px,1.05dvh,9px)/1 var(--font-mono); }
+.kakuro-pad { display: grid; grid-template-columns: repeat(10,1fr); gap: 4px; width: min(100%,440px); margin: auto; }
+.kakuro-pad button { min-width: 0; min-height: clamp(32px,5dvh,42px); padding: 0; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); font: 700 clamp(11px,2dvh,15px) var(--font-mono); cursor: pointer; }
+.kakuro-pad button:last-child { background: var(--fg-soft); }
+.kakuro-toolbar { display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; }
+.kakuro-toolbar .btn { padding: clamp(6px,1dvh,9px) 8px; font-size: clamp(10px,1.55dvh,12px); line-height: 1.05; white-space: nowrap; }
+.kakuro-toolbar .active { border-color: var(--fg); background: var(--fg); color: var(--surface); }
+.kakuro-tutorial { display: grid; grid-template-columns: repeat(4,1fr); width: min(100%,320px); margin: 24px auto; border: 2px solid var(--fg); }
+.kakuro-tutorial > * { aspect-ratio: 1; display: grid; place-items: center; border-right: 1px solid var(--fg); background: var(--surface); font: 700 20px var(--font-mono); }
+.kakuro-tutorial .kakuro-clue { background: var(--fg); font-size: 10px; }
 .result-score { font: 90px/1 var(--font-display); margin: 30px 0 8px; }
 .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 28px 0; }
 .result-grid div { padding: 14px 8px; border-top: 1px solid var(--border); }
