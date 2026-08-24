@@ -272,6 +272,36 @@ p { text-wrap: pretty; }
 .kakuro-tutorial { display: grid; grid-template-columns: repeat(4,1fr); width: min(100%,320px); margin: 24px auto; border: 2px solid var(--fg); }
 .kakuro-tutorial > * { aspect-ratio: 1; display: grid; place-items: center; border-right: 1px solid var(--fg); background: var(--surface); font: 700 20px var(--font-mono); }
 .kakuro-tutorial .kakuro-clue { background: var(--fg); font-size: 10px; }
+.puzzle-toolbar { display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; }
+.puzzle-toolbar .btn { padding: clamp(6px,1dvh,9px) 8px; font-size: clamp(10px,1.55dvh,12px); line-height: 1.05; white-space: nowrap; }
+.puzzle-toolbar .active { border-color: var(--fg); background: var(--fg); color: var(--surface); }
+.hashi-stage, .sky-stage, .star-stage, .sokoban-stage, .akari-stage { overflow: hidden; padding: 6px 4px 9px; scrollbar-gutter: auto; }
+.hashi-stage .stage-inner, .sky-stage .stage-inner, .star-stage .stage-inner, .akari-stage .stage-inner { height: 100%; display: grid; grid-template-rows: auto auto minmax(0,1fr) auto; gap: clamp(5px,1dvh,9px); align-items: center; }
+.sokoban-stage .stage-inner { height: 100%; display: grid; grid-template-rows: auto auto minmax(0,1fr) auto auto; gap: clamp(4px,.8dvh,8px); align-items: center; }
+.hashi-stage h2, .sky-stage h2, .star-stage h2, .sokoban-stage h2, .akari-stage h2 { margin: 0; font-size: clamp(23px,3.8dvh,34px); line-height: 1.05; }
+.hashi-stage .stage-inner > p, .sky-stage .stage-inner > p, .star-stage .stage-inner > p, .sokoban-stage .stage-inner > p, .akari-stage .stage-inner > p { min-height: 1.2em; margin: 0; font-size: clamp(10px,1.65dvh,13px); line-height: 1.2; }
+.hashi-board { position: relative; width: min(100%,52dvh,430px); aspect-ratio: 1; margin: auto; border-radius: 22px; background: color-mix(in oklch,var(--game-blue) 12%,var(--surface)); }
+.hashi-board svg { position: absolute; inset: 8%; width: 84%; height: 84%; overflow: visible; }
+.hashi-line { stroke: var(--border); stroke-width: .045; }
+.hashi-line.active { stroke: var(--game-blue); stroke-width: .075; }.hashi-line.ghost { opacity: 0; }
+.hashi-island { position: absolute; left: calc(8% + var(--c) * 84% / (var(--hashi-grid) - 1)); top: calc(8% + var(--r) * 84% / (var(--hashi-grid) - 1)); width: clamp(28px,4.7dvh,38px); aspect-ratio: 1; transform: translate(-50%,-50%); border: 3px solid var(--fg); border-radius: 50%; background: var(--surface); font: 700 clamp(12px,2.1dvh,17px) var(--font-mono); cursor: pointer; }
+.hashi-island.selected { border-color: var(--accent); background: color-mix(in oklch,var(--accent) 13%,var(--surface)); box-shadow: 0 0 0 4px var(--accent-soft); }
+.sky-wrap { display: grid; grid-template-columns: clamp(25px,4.3dvh,36px) minmax(0,1fr) clamp(25px,4.3dvh,36px); grid-template-rows: clamp(25px,4.3dvh,36px) minmax(0,1fr) clamp(25px,4.3dvh,36px); width: min(100%,51dvh,440px); aspect-ratio: 1; margin: auto; }
+.sky-board { display: grid; grid-template-columns: repeat(var(--sky-n),1fr); border: 2px solid var(--fg); }
+.sky-cell { min-width: 0; padding: 0; border: 0; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--surface); font: 700 clamp(12px,2.7dvh,20px) var(--font-mono); cursor: pointer; }
+.sky-cell.given { background: var(--fg-soft); color: var(--accent); }.sky-cell.selected { background: color-mix(in oklch,var(--accent) 14%,var(--surface)); box-shadow: inset 0 0 0 3px var(--accent); }
+.sky-clues { display: grid; font: 700 clamp(9px,1.6dvh,12px) var(--font-mono); color: var(--muted); }.sky-clues.horizontal { grid-template-columns: repeat(var(--sky-n),1fr); }.sky-clues.vertical { grid-template-rows: repeat(var(--sky-n),1fr); }
+.sky-clues span { display: grid; place-items: center; }
+.sky-pad { display: flex; justify-content: center; gap: 4px; width: min(100%,440px); margin: auto; }.sky-pad button { flex: 1; min-width: 0; min-height: clamp(31px,4.8dvh,40px); padding: 0; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); font: 700 14px var(--font-mono); }
+.sky-stage .stage-inner { grid-template-rows: auto auto minmax(0,1fr) auto auto; }
+.star-board, .akari-board, .sokoban-board { display: grid; width: min(100%,51dvh,430px); aspect-ratio: 1; margin: auto; border: 2px solid var(--fg); border-radius: 14px; overflow: hidden; touch-action: none; }
+.star-board { grid-template-columns: repeat(var(--star-n),1fr); }.akari-board { grid-template-columns: repeat(var(--akari-n),1fr); }.sokoban-board { grid-template-columns: repeat(var(--soko-n),1fr); }
+.star-cell, .akari-cell, .soko-cell { min-width: 0; padding: 0; border: 0; border-right: 1px solid color-mix(in oklch,var(--fg) 20%,var(--border)); border-bottom: 1px solid color-mix(in oklch,var(--fg) 20%,var(--border)); display: grid; place-items: center; font: 700 clamp(12px,2.8dvh,21px) var(--font-mono); }
+.star-cell { cursor: pointer; }.star-cell.starred { color: var(--accent); font-size: clamp(18px,3.8dvh,29px); }.star-cell.crossed { color: var(--muted); }.star-cell.locked { opacity: .45; }
+.region-0 { background:#fff8e5}.region-1{background:#eaf5ee}.region-2{background:#eaf2f8}.region-3{background:#f8e9e5}.region-4{background:#f1ebf7}.region-5{background:#eef0dc}.region-6{background:#f5e9ef}.region-7{background:#e6f3f2}
+.soko-cell { background: color-mix(in oklch,var(--game-blue) 8%,var(--surface)); }.soko-cell.wall { background: var(--fg); }.soko-cell.goal { box-shadow: inset 0 0 0 clamp(5px,1.2dvh,9px) color-mix(in oklch,var(--accent) 22%,transparent); }.soko-cell.box { background: color-mix(in oklch,var(--accent) 48%,var(--surface)); color: var(--fg); }.soko-cell.box.goal { background: var(--game-green); color: var(--surface); }.soko-cell.player { border-radius: 50%; background: var(--game-blue); color: var(--surface); }
+.soko-dpad { display: grid; grid-template-columns: repeat(3,44px); justify-content: center; gap: 4px; }.soko-dpad button { width: 44px; height: 34px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+.akari-cell { background: var(--surface); cursor: pointer; }.akari-cell.wall { background: var(--fg); color: var(--surface); cursor: default; }.akari-cell.lit { background: color-mix(in oklch,#ffd84d 42%,var(--surface)); }.akari-cell.bulb { color: var(--accent); font-size: clamp(17px,3.5dvh,27px); text-shadow: 0 0 10px #ffd84d; }.akari-cell.crossed { color: var(--muted); }
 .result-score { font: 90px/1 var(--font-display); margin: 30px 0 8px; }
 .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 28px 0; }
 .result-grid div { padding: 14px 8px; border-top: 1px solid var(--border); }

@@ -18,13 +18,18 @@ const GAMES = [
   { id: 'nonogram', icon: '▥', title: '数织', desc: '根据行列数字线索，推理并填出隐藏图案。', type: '逻辑推理', ready: true },
   { id: 'logic-grid', icon: '✓×', title: '逻辑矩阵', desc: '阅读条件线索，用确定与排除找出唯一对应关系。', type: '逻辑推理', ready: true },
   { id: 'lights-out', icon: '✦', title: '开关灯', desc: '点击会影响相邻灯光，用最少步骤关闭全部灯。', type: '逻辑推理', ready: true },
-  { id: 'kakuro', icon: 'Σ', title: '数和', desc: '根据横纵和提示填入数字，同一连续组不能重复。', type: '数字逻辑', ready: true }
+  { id: 'kakuro', icon: 'Σ', title: '数和', desc: '根据横纵和提示填入数字，同一连续组不能重复。', type: '数字逻辑', ready: true },
+  { id: 'hashi', icon: '≋', title: '数桥', desc: '按照岛屿数字架桥，让所有岛屿连成一个整体。', type: '逻辑推理', ready: true },
+  { id: 'skyscrapers', icon: '▥', title: '摩天楼', desc: '根据四周视线提示，推断每栋楼的高度。', type: '数字逻辑', ready: true },
+  { id: 'star-battle', icon: '★', title: '星星战役', desc: '在每行、每列和每个区域放置规定数量的星星。', type: '逻辑推理', ready: true },
+  { id: 'sokoban', icon: '箱', title: '推箱子', desc: '规划行走与推动顺序，把所有箱子送到目标点。', type: '空间推理', ready: true },
+  { id: 'akari', icon: '☀', title: '美术馆', desc: '放置灯泡照亮全部空间，同时满足数字墙提示。', type: '逻辑推理', ready: true }
 ];
 const STORAGE_KEY = 'lizhi-progress-v1';
-const DEFAULT_PROGRESS = { version: 8, streak: 1, xp: 999999, sessions: 0, completedToday: 0, best: {}, history: [], seen: { race: [], castle: [], nonogram: [], logicGrid: [], lightsOut: [], kakuro: [] } };
+const DEFAULT_PROGRESS = { version: 9, streak: 1, xp: 999999, sessions: 0, completedToday: 0, best: {}, history: [], seen: { race: [], castle: [], nonogram: [], logicGrid: [], lightsOut: [], kakuro: [], hashi: [], skyscrapers: [], starBattle: [], sokoban: [], akari: [] } };
 function loadProgress(raw = localStorage.getItem(STORAGE_KEY)) {
-  try { const data = raw ? JSON.parse(raw) : {}; let migrated = data.version === 1 ? { ...data, version: 2, xp: 999999 } : data; if((migrated.version||0)<3)migrated={...migrated,version:3,history:migrated.history||[]};if((migrated.version||0)<4)migrated={...migrated,version:4,seen:{race:[],castle:[]}};if((migrated.version||0)<5)migrated={...migrated,version:5,seen:{...(migrated.seen||{}),nonogram:[]}};if((migrated.version||0)<6)migrated={...migrated,version:6,seen:{...(migrated.seen||{}),logicGrid:[]}};if((migrated.version||0)<7)migrated={...migrated,version:7,seen:{...(migrated.seen||{}),lightsOut:[]}};if((migrated.version||0)<8)migrated={...migrated,version:8,seen:{...(migrated.seen||{}),kakuro:[]}}; return { ...DEFAULT_PROGRESS, ...migrated, best: { ...DEFAULT_PROGRESS.best, ...(migrated.best || {}) }, history: Array.isArray(migrated.history)?migrated.history:[], seen:{race:migrated.seen?.race||[],castle:migrated.seen?.castle||[],nonogram:migrated.seen?.nonogram||[],logicGrid:migrated.seen?.logicGrid||[],lightsOut:migrated.seen?.lightsOut||[],kakuro:migrated.seen?.kakuro||[]} }; }
-  catch { return { ...DEFAULT_PROGRESS, best: {}, history: [], seen:{race:[],castle:[],nonogram:[],logicGrid:[],lightsOut:[],kakuro:[]} }; }
+  try { const data = raw ? JSON.parse(raw) : {}; let migrated = data.version === 1 ? { ...data, version: 2, xp: 999999 } : data; if((migrated.version||0)<3)migrated={...migrated,version:3,history:migrated.history||[]};if((migrated.version||0)<4)migrated={...migrated,version:4,seen:{race:[],castle:[]}};if((migrated.version||0)<5)migrated={...migrated,version:5,seen:{...(migrated.seen||{}),nonogram:[]}};if((migrated.version||0)<6)migrated={...migrated,version:6,seen:{...(migrated.seen||{}),logicGrid:[]}};if((migrated.version||0)<7)migrated={...migrated,version:7,seen:{...(migrated.seen||{}),lightsOut:[]}};if((migrated.version||0)<8)migrated={...migrated,version:8,seen:{...(migrated.seen||{}),kakuro:[]}};if((migrated.version||0)<9)migrated={...migrated,version:9,seen:{...(migrated.seen||{}),hashi:[],skyscrapers:[],starBattle:[],sokoban:[],akari:[]}}; const seen=migrated.seen||{};return { ...DEFAULT_PROGRESS, ...migrated, best: { ...DEFAULT_PROGRESS.best, ...(migrated.best || {}) }, history: Array.isArray(migrated.history)?migrated.history:[], seen:{...DEFAULT_PROGRESS.seen,...seen} }; }
+  catch { return { ...DEFAULT_PROGRESS, best: {}, history: [], seen:{...DEFAULT_PROGRESS.seen} }; }
 }
 let progress = loadProgress();
 const saveProgress = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));

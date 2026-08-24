@@ -12,5 +12,6 @@ function closeGame() { clearTimeout(state?.timer); stage.className = 'game-stage
 document.getElementById('closeGame').addEventListener('click', closeGame);
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && gameScreen.classList.contains('open')) closeGame(); });
 document.addEventListener('keydown', e => { if (state?.kind !== '2048') return; const directions={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'};if(directions[e.key]){e.preventDefault();play2048(directions[e.key]);} });
+document.addEventListener('keydown', e => { if (state?.kind !== 'sokoban') return; const directions={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'};if(directions[e.key]){e.preventDefault();playSokoban(directions[e.key]);} });
 
 renderProgress();

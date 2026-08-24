@@ -9,12 +9,13 @@ window.MindPeakTests = {
     assert('no leading zero', makeSequence(6, () => 0)[0] !== '0');
     assert('wrong answer scores zero', calculateRoundScore(5, 1000, false) === 0);
     assert('higher difficulty scores more', calculateRoundScore(6, 1000, true) > calculateRoundScore(3, 1000, true));
-    assert('malformed storage fallback', loadProgress('{broken').version === 8);
+    assert('malformed storage fallback', loadProgress('{broken').version === 9);
     assert('progress merge', loadProgress('{"streak":7}').streak === 7);
     assert('nonogram history migration', Array.isArray(loadProgress('{"version":4,"seen":{"race":[],"castle":[]}}').seen.nonogram));
     assert('logic grid history migration', Array.isArray(loadProgress('{"version":5,"seen":{"race":[],"castle":[],"nonogram":[]}}').seen.logicGrid));
     assert('lights out history migration', Array.isArray(loadProgress('{"version":6,"seen":{"logicGrid":[]}}').seen.lightsOut));
     assert('kakuro history migration', Array.isArray(loadProgress('{"version":7,"seen":{"lightsOut":[]}}').seen.kakuro));
+    assert('puzzle pack history migration', Array.isArray(loadProgress('{"version":8,"seen":{"kakuro":[]}}').seen.hashi));
     const colorTrial = makeColorTrial(() => .1);
     assert('color trial in range', colorTrial.word >= 0 && colorTrial.ink < COLORS.length);
     const mathTrial = makeMathTrial(10, () => .2);
@@ -52,6 +53,16 @@ window.MindPeakTests = {
     assert('kakuro groups all have length', kakuroSample.runs.every(run=>run.cells.length>=2));
     assert('kakuro generated unique', kakuroSolved.count === 1);
     assert('kakuro solver matches', kakuroSolved.solution.join('') === kakuroSample.solution.join(''));
+    const hashiSample=generateHashi('medium',seededRandom(11),true);
+    assert('hashi generated connected', hashiValid(hashiSample,hashiSample.edges.map(edge=>edge.weight)));
+    const skySample=generateSkyscrapers('medium',seededRandom(12),true);
+    assert('skyscraper latin solution', skyscraperSolutionValid(skySample));
+    const starSample=generateStarBattle('medium',seededRandom(13),true),starMarks=Array(starSample.n**2).fill(0);starSample.stars.forEach((c,r)=>starMarks[r*starSample.n+c]=1);
+    assert('star battle generated valid', starBattleValid(starSample,starMarks));
+    const sokoSample=generateSokoban('easy',seededRandom(14),true);
+    assert('sokoban generated solvable', solveSokoban(sokoSample)?.length>0);
+    const akariSample=generateAkari('easy',seededRandom(15),true),akariMarks=Array(akariSample.n**2).fill(0);akariSample.solution.forEach(i=>akariMarks[i]=1);
+    assert('akari generated valid', akariValid(akariSample,akariMarks));
     console.table(checks.map(name => ({ test: name, result: 'PASS' }))); return `${checks.length} tests passed`;
   }
 };
