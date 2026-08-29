@@ -10,19 +10,20 @@
   <div class="app" id="home">
     <header class="topbar">
       <div class="brand"><span class="brand-mark">砺</span><div><strong>砺智</strong><small>每天锋利一点</small></div></div>
-      <div class="streak"><span class="streak-dot"></span><b id="streakCount">1</b><span>天连续训练</span></div>
+      <div class="top-actions"><span class="level-chip" id="headerLevel">LV 1</span><div class="streak"><span class="streak-dot"></span><b id="streakCount">1</b><span>天连续训练</span></div><span class="xp-chip"><b id="headerXp">0</b> XP</span></div>
     </header>
     <main>
       <section class="hero-grid" data-od-id="daily-workout">
-        <div class="hero-copy"><p class="eyebrow">今日训练 · 约 6 分钟</p><h1>唤醒你的思考力。</h1><p>短时、专注、循序渐进。完成今天的四项练习，建立属于你的能力曲线。</p></div>
+        <div class="hero-copy"><p class="eyebrow">今日训练 · 约 6 分钟</p><h1>唤醒你的思考力。</h1><p>短时、专注、循序渐进。完成今天的四项练习，建立属于你的能力曲线。</p><div class="level-ribbon"><div class="level-ribbon-head"><span><b id="homeLevel">LV 1</b><small id="homeLevelName">初学者</small></span><strong id="homeMasteryText">0 / 1,000 脑力经验</strong></div><div class="level-track"><span id="homeMasteryFill"></span></div><small id="homeLevelNext">距离下一等级还差 1,000</small></div></div>
         <article class="workout">
-          <div class="workout-head"><div><small>每日组合</small><h3>晨间校准</h3></div><span class="muted" id="workoutProgress">0 / 4</span></div>
+          <div class="workout-head"><div><small>每日组合</small><h3>晨间校准</h3></div><span class="daily-reward" id="workoutReward">完成奖励 +120 XP</span></div>
           <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="workout-progress-row"><span>今日进度</span><strong id="workoutProgress">0 / 4</strong></div>
           <div class="workout-list">
-            <div class="workout-item"><span>01</span><b>数字闪忆</b><em>记忆</em></div>
-            <div class="workout-item"><span>02</span><b>颜色冲突</b><em>专注</em></div>
-            <div class="workout-item"><span>03</span><b>极速运算</b><em>敏捷</em></div>
-            <div class="workout-item"><span>04</span><b>路径回溯</b><em>推理</em></div>
+            <div class="workout-item" data-daily-index="0"><span>01</span><b>数字闪忆</b><em>记忆</em><i>✓</i></div>
+            <div class="workout-item" data-daily-index="1"><span>02</span><b>颜色冲突</b><em>专注</em><i>✓</i></div>
+            <div class="workout-item" data-daily-index="2"><span>03</span><b>极速运算</b><em>敏捷</em><i>✓</i></div>
+            <div class="workout-item" data-daily-index="3"><span>04</span><b>路径回溯</b><em>推理</em><i>✓</i></div>
           </div>
           <button class="btn btn-primary" id="startWorkout">开始今日训练</button>
         </article>
@@ -31,15 +32,18 @@
       <section class="section" data-od-id="ability-overview">
         <div class="section-head"><h2>能力概览</h2><p>完成训练后，这里会逐渐形成你的个人基线。</p></div>
         <div class="skill-grid">
-          <div class="skill"><div class="skill-score" id="memoryScore">—</div><div class="skill-label">记忆力</div></div>
-          <div class="skill"><div class="skill-score" id="focusScore">—</div><div class="skill-label">专注力</div></div>
-          <div class="skill"><div class="skill-score" id="agilityScore">—</div><div class="skill-label">思维敏捷</div></div>
-          <div class="skill"><div class="skill-score" id="reasonScore">—</div><div class="skill-label">问题解决</div></div>
+          <div class="skill"><div class="skill-score" id="memoryScore">—</div><div class="skill-label">记忆力</div><small id="memoryGrade">尚未评级</small></div>
+          <div class="skill"><div class="skill-score" id="focusScore">—</div><div class="skill-label">专注力</div><small id="focusGrade">尚未评级</small></div>
+          <div class="skill"><div class="skill-score" id="agilityScore">—</div><div class="skill-label">思维敏捷</div><small id="agilityGrade">尚未评级</small></div>
+          <div class="skill"><div class="skill-score" id="reasonScore">—</div><div class="skill-label">问题解决</div><small id="reasonGrade">尚未评级</small></div>
         </div>
       </section>
 
+      <section class="section" data-od-id="achievement-preview"><div class="section-head row-between"><div><h2>成就陈列</h2><p>每一次坚持、探索和突破都会留下徽章。</p></div><button class="text-btn" id="viewAchievements">查看全部 <span id="homeAchievementCount">0/12</span> →</button></div><div class="achievement-preview" id="achievementPreview"></div></section>
+
       <section class="section" data-od-id="game-library">
         <div class="section-head row-between"><div><h2>全部游戏</h2><p>认知训练与传统益智，各有各的乐趣。</p></div><span class="muted">23 款</span></div>
+        <div class="library-tools"><div class="filter-chips" id="gameFilters"><button class="active" data-game-filter="all">全部</button><button data-game-filter="logic">逻辑</button><button data-game-filter="classic">经典</button><button data-game-filter="memory">记忆</button><button data-game-filter="spatial">空间</button></div><label class="game-search"><span>⌕</span><input id="gameSearch" type="search" placeholder="搜索游戏" autocomplete="off"></label></div>
         <div class="games" id="games"></div>
       </section>
     </main>
@@ -48,7 +52,7 @@
   <div class="app page-screen hidden" id="progressPage">
     <header class="topbar"><div class="brand"><span class="brand-mark">析</span><div><strong>训练进度</strong><small>看见每一次积累</small></div></div><span class="muted" id="reportSessions">0 次训练</span></header>
     <main>
-      <section data-od-id="progress-overview"><p class="eyebrow">最近 7 天</p><h1>你的能力曲线。</h1><div class="report-grid">
+      <section data-od-id="progress-overview"><p class="eyebrow">最近 7 天</p><h1>你的能力曲线。</h1><div class="report-summary"><div><span>平均得分</span><strong id="reportAverage">—</strong></div><div><span>最高段位</span><strong id="reportTopGrade">—</strong></div><div><span>探索游戏</span><strong id="reportGames">0/23</strong></div><div><span>脑力经验</span><strong id="reportMastery">0</strong></div></div><div class="report-grid">
         <article class="report-card"><h3>每日训练得分</h3><p>同一天多次训练取平均值。</p><div class="trend-chart" id="trendChart"></div></article>
         <article class="report-card"><h3>个人最佳</h3><p>所有游戏的历史最高得分。</p><div class="best-list" id="bestList"></div></article>
       </div></section>
@@ -59,7 +63,8 @@
   <div class="app page-screen hidden" id="profilePage">
     <header class="topbar"><div class="brand"><span class="brand-mark">我</span><div><strong>个人中心</strong><small>你的训练档案</small></div></div></header>
     <main>
-      <section data-od-id="profile-overview"><div class="profile-hero"><div class="avatar">砺</div><div><p class="eyebrow">本地训练者</p><h2>每天锋利一点</h2><p class="muted">当前为无需登录的本地档案，成绩保存在这台设备中。</p></div></div><div class="profile-stats"><div class="profile-stat"><strong id="profileXp">0</strong><span>可用 XP</span></div><div class="profile-stat"><strong id="profileStreak">1</strong><span>连续训练天数</span></div><div class="profile-stat"><strong id="profileSessions">0</strong><span>累计训练次数</span></div></div></section>
+      <section data-od-id="profile-overview"><div class="profile-hero"><div class="avatar">砺<span id="avatarLevel">1</span></div><div><p class="eyebrow">本地训练者 · <span id="profileLevelName">初学者</span></p><h2>每天锋利一点</h2><p class="muted">当前为无需登录的本地档案，成绩与成就保存在这台设备中。</p><div class="profile-level"><div><span id="profileMasteryText">0 / 1,000</span><strong id="profileLevel">LV 1</strong></div><div class="level-track"><span id="profileMasteryFill"></span></div></div></div></div><div class="profile-stats"><div class="profile-stat"><strong id="profileXp">0</strong><span>可用 XP</span></div><div class="profile-stat"><strong id="profileMastery">0</strong><span>累计脑力经验</span></div><div class="profile-stat"><strong id="profileStreak">1</strong><span>连续训练天数</span></div><div class="profile-stat"><strong id="profileSessions">0</strong><span>累计训练次数</span></div></div></section>
+      <section class="section" data-od-id="achievements"><div class="section-head row-between"><div><h2>全部成就</h2><p>未解锁徽章会显示清晰的达成条件。</p></div><span class="muted" id="profileAchievementCount">0 / 12</span></div><div class="achievement-grid" id="achievementGrid"></div></section>
       <section class="section" data-od-id="profile-settings"><div class="section-head"><h2>数据与设置</h2><p>下一阶段将加入云端账号和跨设备同步。</p></div><div class="report-card"><div class="row-between"><div><h3>重置本地训练数据</h3><p class="muted">清除成绩、历史和连续训练记录。</p></div><button class="btn btn-secondary" id="resetProgress">重置</button></div></div></section>
     </main>
   </div>
