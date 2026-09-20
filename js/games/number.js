@@ -32,7 +32,7 @@ function showAnswer() {
   input.addEventListener('keydown', e => { if (e.key === 'Enter') submitAnswer(); });
 }
 function submitAnswer() {
-  const input = document.getElementById('answer'); if (!input || !input.value) return;
+  const input = document.getElementById('answer'); if (!input || input.disabled || !input.value || state.settled) return;
   const isCorrect = input.value === state.sequence; const elapsed = performance.now() - state.startedAt; state.score += calculateRoundScore(state.length, elapsed, isCorrect);
   if (isCorrect) { state.correct++; state.length = Math.min(12, state.length + 1); state.level++; }
   else { state.mistakes++; state.length = Math.max(3, state.length - 1); }
@@ -44,9 +44,5 @@ function submitAnswer() {
 function showResults() {
   const accuracy = state.rounds ? Math.round(state.correct / state.rounds * 100) : 0;
   const finalScore = Math.min(999, Math.round(state.score / Math.max(1, state.rounds)));
-  const isBest = finalScore > (progress.best.number || 0);
-  progress.best.number = Math.max(finalScore, progress.best.number || 0); progress.sessions++; progress.xp += state.correct * 10;
-  progress.completedToday = Math.min(4, progress.completedToday + 1); recordSession('number',finalScore); saveProgress(); renderProgress();
-  stage.innerHTML = `<div class="stage-inner"><p class="eyebrow">训练完成</p><h2>${isBest ? '新的个人最佳' : '不错的练习'}</h2><div class="result-score">${finalScore}</div><p class="muted">记忆力得分</p><div class="result-grid"><div><strong>${accuracy}%</strong><small>准确率</small></div><div><strong>${state.correct}</strong><small>答对</small></div><div><strong>${state.level}</strong><small>最高等级</small></div></div><button class="btn btn-primary" id="replay">再练一次</button><button class="btn btn-secondary" id="finish" style="width:100%;margin-top:9px">返回首页</button></div>`;
-  document.getElementById('replay').addEventListener('click', openNumberGame); document.getElementById('finish').addEventListener('click', closeGame);
+  completeGame('number','数字闪忆',finalScore,[{value:accuracy+'%',label:'准确率'},{value:state.correct,label:'答对'},{value:state.level,label:'最高等级'}],openNumberGame);
 }

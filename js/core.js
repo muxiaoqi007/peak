@@ -1,6 +1,8 @@
 // Shared application core — loaded as a classic script to support file:// usage.
 
 const GAMES = [
+  { id:'futoshiki',icon:'<>',title:'不等式数独',desc:'结合大小关系与行列排除，找出唯一数字答案。',type:'数字逻辑',ready:true },
+  { id:'peg-solitaire',icon:'●',title:'孔明棋',desc:'跳过并移除棋子，规划最后只留一颗的路线。',type:'经典益智',ready:true },
   { id: 'number', icon: '123', title: '数字闪忆', desc: '记住一闪而过的数字，并按原顺序复现。', type: '记忆训练', ready: true },
   { id: 'color', icon: 'Aa', title: '颜色冲突', desc: '忽略文字含义，快速判断它真正的颜色。', type: '专注训练', ready: true },
   { id: 'math', icon: '±', title: '极速运算', desc: '在倒计时内判断算式是否成立。', type: '敏捷训练', ready: true },
@@ -47,7 +49,7 @@ function scoreGrade(score){return SCORE_BANDS.find(band=>score>=band.min);}
 function scoreStars(score){return score>=900?5:score>=800?4:score>=650?3:score>=450?2:1;}
 function scoreReward(score){return 20+Math.floor(Math.max(0,Math.min(999,score))/25);}
 function masteryLevel(xp){const safe=Math.max(0,Number(xp)||0),level=Math.floor(Math.sqrt(safe/1000))+1,start=(level-1)**2*1000,next=level**2*1000,titles=['初学者','探索者','解谜者','思辨者','策略家','大师','巅峰智者'];return{level,start,next,current:safe-start,needed:next-start,ratio:(safe-start)/(next-start),title:titles[Math.min(level-1,titles.length-1)]};}
-function distinctGames(p){return new Set((p.history||[]).map(row=>row.game));}
+function distinctGames(p){return new Set([...Object.keys(p.best||{}),...(p.history||[]).map(row=>row.game)]);}
 function syncDailyProgress(p,date=new Date()){const today=dateKey(date);if(p.dailyDate!==today){p.dailyDate=today;p.completedToday=0;}return p;}
 function eligibleAchievements(p){return ACHIEVEMENTS.filter(item=>!p.achievements?.[item.id]&&item.test(p));}
 function unlockAchievements(p,at=new Date().toISOString()){const unlocked=eligibleAchievements(p);p.achievements=p.achievements||{};unlocked.forEach(item=>p.achievements[item.id]=at);return unlocked;}
@@ -109,6 +111,8 @@ function registerGame(id, launcher) {
 }
 
 function completeGame(id, title, score, stats, replay) {
+  if(state?.settled)return;
+  if(state){clearTimeout(state.timer);state.settled=true;}
   stage.className = 'game-stage';
   syncDailyProgress(progress);const finalScore = Math.max(0, Math.min(999, Math.round(score))),band=scoreGrade(finalScore),stars=scoreStars(finalScore),xpEarned=scoreReward(finalScore),masteryEarned=Math.max(40,Math.round(finalScore*.6));
   const isBest = finalScore > (progress.best[id] || 0);

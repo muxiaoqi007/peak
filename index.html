@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>砺智 · 每日脑力训练</title>
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/new-puzzles.css">
 </head>
 <body>
   <div class="app" id="home">
@@ -42,7 +43,7 @@
       <section class="section" data-od-id="achievement-preview"><div class="section-head row-between"><div><h2>成就陈列</h2><p>每一次坚持、探索和突破都会留下徽章。</p></div><button class="text-btn" id="viewAchievements">查看全部 <span id="homeAchievementCount">0/12</span> →</button></div><div class="achievement-preview" id="achievementPreview"></div></section>
 
       <section class="section" data-od-id="game-library">
-        <div class="section-head row-between"><div><h2>全部游戏</h2><p>认知训练与传统益智，各有各的乐趣。</p></div><span class="muted">23 款</span></div>
+        <div class="section-head row-between"><div><h2>全部游戏</h2><p>认知训练与传统益智，各有各的乐趣。</p></div><span class="muted">25 款</span></div>
         <div class="library-tools"><div class="filter-chips" id="gameFilters"><button class="active" data-game-filter="all">全部</button><button data-game-filter="logic">逻辑</button><button data-game-filter="classic">经典</button><button data-game-filter="memory">记忆</button><button data-game-filter="spatial">空间</button></div><label class="game-search"><span>⌕</span><input id="gameSearch" type="search" placeholder="搜索游戏" autocomplete="off"></label></div>
         <div class="games" id="games"></div>
       </section>
@@ -80,6 +81,9 @@
   </section>
 
   <script src="js/core.js"></script>
+  <script src="js/games/puzzle-tools.js"></script>
+  <script src="js/games/futoshiki.js"></script>
+  <script src="js/games/peg-solitaire.js"></script>
   <script src="js/games/number.js"></script>
   <script src="js/games/color.js"></script>
   <script src="js/games/math.js"></script>

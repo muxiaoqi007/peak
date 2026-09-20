@@ -12,10 +12,10 @@ gamesEl.addEventListener('click', e => {
 });
 document.getElementById('startWorkout').addEventListener('click',()=>{const daily=[openNumberGame,openColorGame,openMathGame,openPathGame];daily[Math.min(progress.completedToday,daily.length-1)]();});
 
-function closeGame() { clearTimeout(state?.timer); stage.className = 'game-stage'; gameScreen.classList.remove('open'); document.body.style.overflow = ''; }
+function closeGame() { clearTimeout(state?.timer); if(state)state.kind='closed'; stage.className = 'game-stage'; gameScreen.classList.remove('open'); document.body.style.overflow = ''; renderProgress(); }
 document.getElementById('closeGame').addEventListener('click', closeGame);
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && gameScreen.classList.contains('open')) closeGame(); });
-document.addEventListener('keydown', e => { if (state?.kind !== '2048') return; const directions={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'};if(directions[e.key]){e.preventDefault();play2048(directions[e.key]);} });
-document.addEventListener('keydown', e => { if (state?.kind !== 'sokoban') return; const directions={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'};if(directions[e.key]){e.preventDefault();playSokoban(directions[e.key]);} });
+document.addEventListener('keydown', e => { if (state?.kind !== '2048' || state.settled || !gameScreen.classList.contains('open')) return; const directions={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'};if(directions[e.key]){e.preventDefault();play2048(directions[e.key]);} });
+document.addEventListener('keydown', e => { if (state?.kind !== 'sokoban' || state.settled || !gameScreen.classList.contains('open')) return; const directions={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'};if(directions[e.key]){e.preventDefault();playSokoban(directions[e.key]);} });
 
 renderProgress();
